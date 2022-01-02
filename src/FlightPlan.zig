@@ -5,35 +5,17 @@ const mem = std.mem;
 const hash_map = std.hash_map;
 const testing = std.testing;
 const Allocator = std.mem.Allocator;
+const Waypoint = @import("Waypoint.zig");
 const testutil = @import("test.zig");
 const xml = @import("xml.zig");
 const c = xml.c;
+const Error = @import("errors.zig").Error;
+
+const WPHashMap = hash_map.StringHashMap(Waypoint);
 
 alloc: Allocator,
 created: []const u8,
-waypoints: hash_map.StringHashMap(Waypoint),
-
-pub const Error = error{
-    ReadFailed,
-    NodeExpected,
-    InvalidElement,
-};
-
-pub const Waypoint = struct {
-    identifier: []const u8,
-    type: Type,
-    lat: []const u8,
-    lon: []const u8,
-
-    const Type = enum {
-        user_waypoint,
-        airport,
-        ndb,
-        vor,
-        int,
-        int_vrp,
-    };
-};
+waypoints: WPHashMap,
 
 pub fn parseFromFile(alloc: Allocator, path: []const u8) !Self {
     // Read the file
@@ -60,13 +42,17 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
         return Error.InvalidElement;
     }
 
-    var result = Self{
+    var self = Self{
         .alloc = alloc,
         .created = undefined,
-        .waypoints = undefined,
+        .waypoints = WPHashMap.init(alloc),
     };
 
-    // Go through each child, and parse depending on type
+    try self.parseFlightPlan(node);
+    return self;
+}
+
+fn parseFlightPlan(self: *Self, node: *c.xmlNode) !void {
     var cur: ?*c.xmlNode = node.children;
     while (cur) |n| : (cur = n.next) {
         if (n.type != c.XML_ELEMENT_NODE) {
@@ -76,17 +62,45 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
         if (c.xmlStrcmp(n.name, "created") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            result.created = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            self.created = try Allocator.dupe(self.alloc, u8, mem.sliceTo(copy, 0));
             continue;
+        } else if (c.xmlStrcmp(n.name, "waypoint-table") == 0) {
+            try self.parseWaypointTable(n);
         }
     }
+}
 
-    return result;
+fn parseWaypointTable(self: *Self, node: *c.xmlNode) !void {
+    var cur: ?*c.xmlNode = node.children;
+    while (cur) |n| : (cur = n.next) {
+        if (n.type != c.XML_ELEMENT_NODE) {
+            continue;
+        }
+
+        if (c.xmlStrcmp(n.name, "waypoint") == 0) {
+            const wp = try Waypoint.initFromXMLNode(self.alloc, n);
+            try self.waypoints.put(wp.identifier, wp);
+            continue;
+        }
+
+        return Error.InvalidElement;
+    }
 }
 
 pub fn deinit(self: *Self) void {
     self.alloc.free(self.created);
+
+    var it = self.waypoints.iterator();
+    while (it.next()) |kv| {
+        kv.value_ptr.deinit(self.alloc);
+    }
+    self.waypoints.deinit();
+
     self.* = undefined;
+}
+
+test {
+    _ = Waypoint;
 }
 
 test {
