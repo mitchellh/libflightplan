@@ -12,7 +12,7 @@ const c = xml.c;
 const Error = @import("errors.zig").Error;
 const Route = @import("Route.zig");
 
-const WPHashMap = hash_map.StringHashMap(Waypoint);
+const WPHashMap = hash_map.StringHashMapUnmanaged(Waypoint);
 
 alloc: Allocator,
 created: []const u8,
@@ -47,7 +47,7 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
     var self = Self{
         .alloc = alloc,
         .created = undefined,
-        .waypoints = WPHashMap.init(alloc),
+        .waypoints = WPHashMap{},
         .route = undefined,
     };
 
@@ -83,7 +83,7 @@ fn parseWaypointTable(self: *Self, node: *c.xmlNode) !void {
 
         if (c.xmlStrcmp(n.name, "waypoint") == 0) {
             const wp = try Waypoint.initFromXMLNode(self.alloc, n);
-            try self.waypoints.put(wp.identifier, wp);
+            try self.waypoints.put(self.alloc, wp.identifier, wp);
         }
     }
 }
@@ -97,7 +97,7 @@ pub fn deinit(self: *Self) void {
     while (it.next()) |kv| {
         kv.value_ptr.deinit(self.alloc);
     }
-    self.waypoints.deinit();
+    self.waypoints.deinit(self.alloc);
 
     self.* = undefined;
 }
