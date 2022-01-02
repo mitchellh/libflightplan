@@ -57,28 +57,19 @@ pub fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
             self.identifier = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-            continue;
         } else if (c.xmlStrcmp(n.name, "lat") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
             self.lat = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-            continue;
         } else if (c.xmlStrcmp(n.name, "lon") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
             self.lon = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-            continue;
         } else if (c.xmlStrcmp(n.name, "type") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
             self.type = Type.fromString(mem.sliceTo(copy, 0));
-            continue;
-        } else if (c.xmlStrcmp(n.name, "altitude-ft") == 0) {
-            // Ignore
-            continue;
         }
-
-        return Error.InvalidElement;
     }
 
     return self;

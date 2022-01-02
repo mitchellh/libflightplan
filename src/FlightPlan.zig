@@ -10,12 +10,14 @@ const testutil = @import("test.zig");
 const xml = @import("xml.zig");
 const c = xml.c;
 const Error = @import("errors.zig").Error;
+const Route = @import("Route.zig");
 
 const WPHashMap = hash_map.StringHashMap(Waypoint);
 
 alloc: Allocator,
 created: []const u8,
 waypoints: WPHashMap,
+route: Route,
 
 pub fn parseFromFile(alloc: Allocator, path: []const u8) !Self {
     // Read the file
@@ -46,6 +48,7 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
         .alloc = alloc,
         .created = undefined,
         .waypoints = WPHashMap.init(alloc),
+        .route = undefined,
     };
 
     try self.parseFlightPlan(node);
@@ -63,9 +66,10 @@ fn parseFlightPlan(self: *Self, node: *c.xmlNode) !void {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
             self.created = try Allocator.dupe(self.alloc, u8, mem.sliceTo(copy, 0));
-            continue;
         } else if (c.xmlStrcmp(n.name, "waypoint-table") == 0) {
             try self.parseWaypointTable(n);
+        } else if (c.xmlStrcmp(n.name, "route") == 0) {
+            self.route = try Route.initFromXMLNode(self.alloc, n);
         }
     }
 }
@@ -80,15 +84,14 @@ fn parseWaypointTable(self: *Self, node: *c.xmlNode) !void {
         if (c.xmlStrcmp(n.name, "waypoint") == 0) {
             const wp = try Waypoint.initFromXMLNode(self.alloc, n);
             try self.waypoints.put(wp.identifier, wp);
-            continue;
         }
-
-        return Error.InvalidElement;
     }
 }
 
 pub fn deinit(self: *Self) void {
     self.alloc.free(self.created);
+
+    self.route.deinit(self.alloc);
 
     var it = self.waypoints.iterator();
     while (it.next()) |kv| {
@@ -103,13 +106,17 @@ test {
     _ = Waypoint;
 }
 
-test {
+test "basic reading" {
     const testPath = testutil.testFile("basic.fpl");
     var plan = try parseFromFile(testing.allocator, testPath);
     defer plan.deinit();
 
     try testing.expectEqualStrings(plan.created, "20211230T22:07:20Z");
     try testing.expectEqual(plan.waypoints.count(), 20);
+
+    // Test route
+    try testing.expectEqualStrings(plan.route.name, "KHHR TO KHTH");
+    try testing.expectEqual(plan.route.points.items.len, 20);
 
     // Test a waypoint
     {
