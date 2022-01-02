@@ -109,4 +109,14 @@ test {
     defer plan.deinit();
 
     try testing.expectEqualStrings(plan.created, "20211230T22:07:20Z");
+    try testing.expectEqual(plan.waypoints.count(), 20);
+
+    // Test a waypoint
+    {
+        const wp = plan.waypoints.get("KHHR").?;
+        try testing.expectEqualStrings(wp.identifier, "KHHR");
+        try testing.expectEqualStrings(wp.lat, "33.92286102713828");
+        try testing.expectEqualStrings(wp.lon, "-118.3350830946681");
+        try testing.expectEqual(wp.type, .airport);
+    }
 }

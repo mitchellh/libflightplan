@@ -19,6 +19,24 @@ const Type = enum {
     vor,
     int,
     int_vrp,
+
+    pub fn fromString(v: []const u8) Type {
+        if (mem.eql(u8, v, "AIRPORT")) {
+            return .airport;
+        } else if (mem.eql(u8, v, "NDB")) {
+            return .ndb;
+        } else if (mem.eql(u8, v, "USER WAYPOINT")) {
+            return .user_waypoint;
+        } else if (mem.eql(u8, v, "VOR")) {
+            return .vor;
+        } else if (mem.eql(u8, v, "INT")) {
+            return .int;
+        } else if (mem.eql(u8, v, "INT-VRP")) {
+            return .int_vrp;
+        }
+
+        @panic("invalid waypoint type");
+    }
 };
 
 pub fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
@@ -51,7 +69,9 @@ pub fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
             self.lon = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
             continue;
         } else if (c.xmlStrcmp(n.name, "type") == 0) {
-            // TODO
+            const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
+            defer xml.free(copy);
+            self.type = Type.fromString(mem.sliceTo(copy, 0));
             continue;
         } else if (c.xmlStrcmp(n.name, "altitude-ft") == 0) {
             // Ignore
