@@ -5,7 +5,7 @@ const Builder = std.build.Builder;
 const pkgs = struct {
     const flightplan = std.build.Pkg{
         .name = "flightplan",
-        .path = .{ .path = "src/flightplan.zig" },
+        .path = .{ .path = "src/main.zig" },
     };
 };
 
@@ -23,7 +23,10 @@ pub fn build(b: *Builder) void {
     // All tests
     {
         const lib_tests = b.addTestSource(pkgs.flightplan.path);
+        lib_tests.addIncludeDir("src/include");
         lib_tests.setBuildMode(mode);
+        lib_tests.linkLibC();
+        lib_tests.linkSystemLibrary("libxml-2.0");
 
         const test_step = b.step("test", "Run all tests");
         test_step.dependOn(&lib_tests.step);

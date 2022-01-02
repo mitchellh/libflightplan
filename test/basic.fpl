@@ -1,0 +1,279 @@
+<?xml version="1.0" encoding="utf-8"?>
+<flight-plan xmlns="http://www8.garmin.com/xmlschemas/FlightPlan/v1">
+<created>20211230T22:07:20Z</created>
+<aircraft>
+    <aircraft-tailnumber>N123CD</aircraft-tailnumber>
+</aircraft>
+<flight-data>
+    <etd-zulu>20220103T17:00:00Z</etd-zulu>
+    <altitude-ft>11000</altitude-ft>
+</flight-data>
+<waypoint-table>
+
+    <waypoint>
+        <identifier>KHHR</identifier>
+        <type>AIRPORT</type>
+        <lat>33.92286102713828</lat>
+        <lon>-118.3350830946681</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>AHEIM</identifier>
+        <type>INT</type>
+        <lat>33.82031388888889</lat>
+        <lon>-117.9119472222222</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>POWUP</identifier>
+        <type>INT</type>
+        <lat>33.94479166666667</lat>
+        <lon>-117.851825</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>DOWDD</identifier>
+        <type>INT</type>
+        <lat>33.98541388888889</lat>
+        <lon>-117.8321666666667</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>ADAMM</identifier>
+        <type>INT</type>
+        <lat>34.01704722222222</lat>
+        <lon>-117.8168166666667</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>POM</identifier>
+        <type>VOR</type>
+        <lat>34.0783888888889</lat>
+        <lon>-117.787075</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>CALBE</identifier>
+        <type>INT</type>
+        <lat>34.12199722222222</lat>
+        <lon>-117.7284111111111</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>MEANT</identifier>
+        <type>INT</type>
+        <lat>34.19028888888889</lat>
+        <lon>-117.6363472222222</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>GARDY</identifier>
+        <type>INT</type>
+        <lat>34.25594166666666</lat>
+        <lon>-117.5476222222222</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>HESPE</identifier>
+        <type>INT</type>
+        <lat>34.34116666666667</lat>
+        <lon>-117.4320305555556</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>APLES</identifier>
+        <type>INT</type>
+        <lat>34.54846666666667</lat>
+        <lon>-117.1494833333333</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>BASAL</identifier>
+        <type>INT</type>
+        <lat>34.757775</lat>
+        <lon>-116.8618305555556</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>DAG</identifier>
+        <type>VOR</type>
+        <lat>34.9624583333333</lat>
+        <lon>-116.578166666667</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>DISBE</identifier>
+        <type>INT</type>
+        <lat>35.12005555555555</lat>
+        <lon>-116.3817277777778</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>CHRLT</identifier>
+        <type>INT</type>
+        <lat>35.14893055555556</lat>
+        <lon>-116.3456111111111</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>CLARR</identifier>
+        <type>INT</type>
+        <lat>35.67568055555556</lat>
+        <lon>-115.6797527777778</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>HIDEN</identifier>
+        <type>INT</type>
+        <lat>36.02836944444444</lat>
+        <lon>-116.0101666666667</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>BTY</identifier>
+        <type>VOR</type>
+        <lat>36.8005972222222</lat>
+        <lon>-116.747641666667</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>LIDAT</identifier>
+        <type>INT</type>
+        <lat>37.43018611111111</lat>
+        <lon>-117.2780555555556</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+    <waypoint>
+        <identifier>KHTH</identifier>
+        <type>AIRPORT</type>
+        <lat>38.54507703083606</lat>
+        <lon>-118.6324030949059</lon>
+        <altitude-ft></altitude-ft>
+    </waypoint>
+
+</waypoint-table>
+<route>
+    <route-name>KHHR TO KHTH</route-name>
+    <flight-plan-index>1</flight-plan-index>
+
+    <route-point>
+        <waypoint-identifier>KHHR</waypoint-identifier>
+        <waypoint-type>AIRPORT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>AHEIM</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>POWUP</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>DOWDD</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>ADAMM</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>POM</waypoint-identifier>
+        <waypoint-type>VOR</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>CALBE</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>MEANT</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>GARDY</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>HESPE</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>APLES</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>BASAL</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>DAG</waypoint-identifier>
+        <waypoint-type>VOR</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>DISBE</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>CHRLT</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>CLARR</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>HIDEN</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>BTY</waypoint-identifier>
+        <waypoint-type>VOR</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>LIDAT</waypoint-identifier>
+        <waypoint-type>INT</waypoint-type>
+    </route-point>
+
+    <route-point>
+        <waypoint-identifier>KHTH</waypoint-identifier>
+        <waypoint-type>AIRPORT</waypoint-type>
+    </route-point>
+
+</route>
+</flight-plan>
