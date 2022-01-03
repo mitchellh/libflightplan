@@ -15,18 +15,20 @@ const Route = @import("Route.zig");
 /// used for all the memory owned by this structure for deinit to work.
 alloc: Allocator,
 
-created: []const u8,
+created: ?[]const u8 = null,
 
 /// Waypoints that are part of the route. These are unordered, they are
 /// just the full list of possible waypoints that the route may contain.
-waypoints: hash_map.StringHashMapUnmanaged(Waypoint),
+waypoints: hash_map.StringHashMapUnmanaged(Waypoint) = .{},
 
 /// The flight plan route. This route may only contain waypoints in the
 /// waypoints map.
-route: Route,
+route: Route = .{},
 
 pub fn deinit(self: *Self) void {
-    self.alloc.free(self.created);
+    if (self.created) |v| {
+        self.alloc.free(v);
+    }
 
     self.route.deinit(self.alloc);
 

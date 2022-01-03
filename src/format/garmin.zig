@@ -167,11 +167,11 @@ test "basic reading" {
     var plan = try parseFromFile(testing.allocator, testPath);
     defer plan.deinit();
 
-    try testing.expectEqualStrings(plan.created, "20211230T22:07:20Z");
+    try testing.expectEqualStrings(plan.created.?, "20211230T22:07:20Z");
     try testing.expectEqual(plan.waypoints.count(), 20);
 
     // Test route
-    try testing.expectEqualStrings(plan.route.name, "KHHR TO KHTH");
+    try testing.expectEqualStrings(plan.route.name.?, "KHHR TO KHTH");
     try testing.expectEqual(plan.route.points.items.len, 20);
 
     // Test a waypoint
