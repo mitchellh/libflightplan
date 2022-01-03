@@ -23,6 +23,6 @@ a whopping _one_ format, and is not widely used at the moment.
 ## Formats
 
 | Name | Ext | Read | Write |
-| --- | --- | --- |
+| --- | --- | --- | --- |
 | ForeFlight | FPL | ✅ | ❌ |
 | Garmin | FPL | ✅ | ❌ |
