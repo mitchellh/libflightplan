@@ -14,11 +14,9 @@ pub fn build(b: *Builder) void {
     const target = b.standardTargetOptions(.{});
 
     // Primary zig lib
-    {
-        const lib = b.addStaticLibrary("flightplan", "src/binding.zig");
-        initNativeLibrary(lib, mode, target);
-        lib.install();
-    }
+    const static_lib = b.addStaticLibrary("flightplan", "src/binding.zig");
+    initNativeLibrary(static_lib, mode, target);
+    static_lib.install();
 
     // All tests
     {
@@ -29,8 +27,19 @@ pub fn build(b: *Builder) void {
         lib_tests.linkLibC();
         lib_tests.linkSystemLibrary("libxml-2.0");
 
+        const static_binding_test = b.addExecutable("static-binding", null);
+        static_binding_test.setBuildMode(mode);
+        static_binding_test.linkLibC();
+        static_binding_test.addIncludeDir("include");
+        static_binding_test.addCSourceFile("examples/basic.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
+        static_binding_test.linkLibrary(static_lib);
+
+        const static_binding_test_run = static_binding_test.run();
+        static_binding_test_run.cwd = "zig-cache";
+
         const test_step = b.step("test", "Run all tests");
         test_step.dependOn(&lib_tests.step);
+        test_step.dependOn(&static_binding_test_run.step);
     }
 }
 
