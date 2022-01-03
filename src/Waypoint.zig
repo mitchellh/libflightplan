@@ -1,18 +1,24 @@
+/// Waypoint structure is a single potential waypoint in a route. This
+/// contains all the metadata about the waypoint.
 const Self = @This();
 
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const mem = std.mem;
-const xml = @import("xml.zig");
-const c = xml.c;
-const Error = @import("errors.zig").Error;
 
+/// Name of the waypoint. This is a key that is used by the route to lookup
+/// the waypoint.
 identifier: []const u8,
+
+/// Type of the waypoint, such as VOR, NDB, etc.
 type: Type,
+
+/// Latitude and longitude of this waypoint. This is in a string format
+/// so we don't have to parse arbitrary decimals.
 lat: []const u8,
 lon: []const u8,
 
-const Type = enum {
+pub const Type = enum {
     user_waypoint,
     airport,
     ndb,
@@ -38,42 +44,6 @@ const Type = enum {
         @panic("invalid waypoint type");
     }
 };
-
-pub fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !Self {
-    var self = Self{
-        .identifier = undefined,
-        .type = undefined,
-        .lat = undefined,
-        .lon = undefined,
-    };
-
-    var cur: ?*c.xmlNode = node.children;
-    while (cur) |n| : (cur = n.next) {
-        if (n.type != c.XML_ELEMENT_NODE) {
-            continue;
-        }
-
-        if (c.xmlStrcmp(n.name, "identifier") == 0) {
-            const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
-            defer xml.free(copy);
-            self.identifier = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-        } else if (c.xmlStrcmp(n.name, "lat") == 0) {
-            const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
-            defer xml.free(copy);
-            self.lat = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-        } else if (c.xmlStrcmp(n.name, "lon") == 0) {
-            const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
-            defer xml.free(copy);
-            self.lon = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
-        } else if (c.xmlStrcmp(n.name, "type") == 0) {
-            const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
-            defer xml.free(copy);
-            self.type = Type.fromString(mem.sliceTo(copy, 0));
-        }
-    }
-
-    return self;
-}
 
 pub fn deinit(self: *Self, alloc: Allocator) void {
     alloc.free(self.identifier);
