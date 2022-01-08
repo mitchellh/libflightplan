@@ -8,7 +8,7 @@ int main() {
         return 1;
     }
 
-    printf("created at: %s\n", fpl_created(fpl));
+    printf("created at: %s\n\n", fpl_created(fpl));
     printf("waypoints: %d\n", fpl_waypoints_count(fpl));
 
     flightplan_waypoint_iter *iter = fpl_waypoints_iter(fpl);
@@ -18,7 +18,11 @@ int main() {
             break;
         }
 
-        printf("  %s\n", fpl_waypoint_identifier(wp));
+        printf("  %s\t(%s, %s)\n",
+                fpl_waypoint_identifier(wp),
+                fpl_waypoint_lat(wp),
+                fpl_waypoint_lon(wp)
+        );
     }
     fpl_waypoint_iter_free(iter);
 

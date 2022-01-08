@@ -95,12 +95,44 @@ void fpl_waypoint_iter_free(flightplan_waypoint_iter *);
  * DESCRIPTION
  *
  * Get the next waypoint for the iterator. This returns NULL when there are
- * no more waypoints available.
+ * no more waypoints available. The values returned should NOT be manually
+ * freed, they are owned by the flight plan.
  */
 flightplan_waypoint *fpl_waypoints_next(flightplan_waypoint_iter *);
 
+// TODO
 flightplan_waypoint *fpl_waypoint_new();
 void fpl_waypoint_free(flightplan_waypoint *);
+
+/*
+ * NAME fpl_waypoint_identifier()
+ *
+ * DESCRIPTION
+ *
+ * Return the unique identifier for this waypoint.
+ */
 char *fpl_waypoint_identifier(flightplan_waypoint *);
+
+/*
+ * NAME fpl_waypoint_lat()
+ *
+ * DESCRIPTION
+ *
+ * Return the latitude for this waypoint. This returns the raw value from
+ * the flight plan file, so this isn't guaranteed to be any specific precision.
+ * Validation of the value on read/write is dependent on the format in use.
+ */
+char *fpl_waypoint_lat(flightplan_waypoint *);
+
+/*
+ * NAME fpl_waypoint_lon()
+ *
+ * DESCRIPTION
+ *
+ * Return the longitude for this waypoint. This returns the raw value from
+ * the flight plan file, so this isn't guaranteed to be any specific precision.
+ * Validation of the value on read/write is dependent on the format in use.
+ */
+char *fpl_waypoint_lon(flightplan_waypoint *);
 
 #endif
