@@ -44,8 +44,8 @@ int main() {
 	// Parse our flight plan from an FPL file out of ForeFlight.
 	flightplan *fpl = fpl_parse_garmin("./test/basic.fpl");
 	if (fpl == NULL) {
-	// We can get a more detailed error.
-	flightplan_error *err = fpl_last_error();
+		// We can get a more detailed error.
+		flightplan_error *err = fpl_last_error();
 		printf("error: %s\n", fpl_error_message(err));
 		fpl_cleanup();
 		return 1;
