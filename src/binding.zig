@@ -118,6 +118,16 @@ export fn fpl_waypoint_lon(raw: ?*c.flightplan_waypoint) ?[*:0]const u8 {
     return wp.lon.ptr;
 }
 
+export fn fpl_waypoint_type(raw: ?*c.flightplan_waypoint) c.flightplan_waypoint_type {
+    const wp = waypoint(raw) orelse return c.FLIGHTPLAN_INVALID;
+    return @enumToInt(wp.type) + 1; // must add 1 due to _INVALID
+}
+
+export fn fpl_waypoint_type_str(raw: c.flightplan_waypoint_type) [*:0]const u8 {
+    // subtraction here due to _INVALID
+    return @intToEnum(Waypoint.Type, raw - 1).toString().ptr;
+}
+
 pub fn waypoint(raw: ?*c.flightplan_waypoint) ?*Waypoint {
     return @ptrCast(?*Waypoint, @alignCast(@alignOf(?*Waypoint), raw));
 }

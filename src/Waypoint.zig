@@ -44,7 +44,7 @@ pub const Type = enum {
         @panic("invalid waypoint type");
     }
 
-    pub fn toString(self: Type) []const u8 {
+    pub fn toString(self: Type) [:0]const u8 {
         return switch (self) {
             .user_waypoint => "USER WAYPOINT",
             .airport => "AIRPORT",

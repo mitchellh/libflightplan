@@ -58,6 +58,17 @@ flightplan *fpl_parse_garmin(char *);
 typedef void flightplan_waypoint;
 typedef void flightplan_waypoint_iter;
 
+// Types of waypoints.
+typedef enum {
+    FLIGHTPLAN_INVALID,
+    FLIGHTPLAN_USER_WAYPOINT,
+    FLIGHTPLAN_AIRPORT,
+    FLIGHTPLAN_NDB,
+    FLIGHTPLAN_VOR,
+    FLIGHTPLAN_INT,
+    FLIGHTPLAN_INT_VRP,
+} flightplan_waypoint_type;
+
 /*
  * NAME fpl_waypoints_count()
  *
@@ -134,5 +145,23 @@ char *fpl_waypoint_lat(flightplan_waypoint *);
  * Validation of the value on read/write is dependent on the format in use.
  */
 char *fpl_waypoint_lon(flightplan_waypoint *);
+
+/*
+ * NAME fpl_waypoint_type()
+ *
+ * DESCRIPTION
+ *
+ * Returns the type of this waypoint.
+ */
+flightplan_waypoint_type fpl_waypoint_type(flightplan_waypoint *);
+
+/*
+ * NAME fpl_waypoint_type_str()
+ *
+ * DESCRIPTION
+ *
+ * Convert a waypoint type to a string value.
+ */
+char *fpl_waypoint_type_str(flightplan_waypoint_type);
 
 #endif
