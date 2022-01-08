@@ -13,10 +13,24 @@ pub fn build(b: *Builder) void {
     const mode = b.standardReleaseOptions();
     const target = b.standardTargetOptions(.{});
 
-    // Primary zig lib
+    // Static C lib
     const static_lib = b.addStaticLibrary("flightplan", "src/binding.zig");
     initNativeLibrary(static_lib, mode, target);
     static_lib.install();
+
+    // Dynamic C lib
+    const dynamic_lib_name = if (target.isWindows())
+        "libflightplan.dll"
+    else
+        "libflightplan";
+
+    const dynamic_lib = b.addSharedLibrary(dynamic_lib_name, "src/binding.zig", .unversioned);
+    initNativeLibrary(dynamic_lib, mode, target);
+    dynamic_lib.install();
+
+    // Defaults
+    b.default_step.dependOn(&static_lib.step);
+    b.default_step.dependOn(&dynamic_lib.step);
 
     // All tests
     {
@@ -34,11 +48,20 @@ pub fn build(b: *Builder) void {
         static_binding_test.addCSourceFile("examples/basic.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
         static_binding_test.linkLibrary(static_lib);
 
+        const dynamic_binding_test = b.addExecutable("dynamic-binding", null);
+        dynamic_binding_test.setBuildMode(mode);
+        dynamic_binding_test.linkLibC();
+        dynamic_binding_test.addIncludeDir("include");
+        dynamic_binding_test.addCSourceFile("examples/basic.c", &[_][]const u8{ "-Wall", "-Wextra", "-pedantic", "-std=c99" });
+        dynamic_binding_test.linkLibrary(dynamic_lib);
+
         const static_binding_test_run = static_binding_test.run();
+        const dynamic_binding_test_run = dynamic_binding_test.run();
 
         const test_step = b.step("test", "Run all tests");
         test_step.dependOn(&lib_tests.step);
         test_step.dependOn(&static_binding_test_run.step);
+        test_step.dependOn(&dynamic_binding_test_run.step);
     }
 }
 
