@@ -41,26 +41,26 @@ read and extract information from a ForeFlight flight plan.
 #include <libflightplan.h>
 
 int main() {
-    // Parse our flight plan from an FPL file out of ForeFlight.
-    flightplan *fpl = fpl_parse_garmin("./test/basic.fpl");
-    if (fpl == NULL) {
-		// We can get a more detailed error.
-		flightplan_error *err = fpl_last_error();
+	// Parse our flight plan from an FPL file out of ForeFlight.
+	flightplan *fpl = fpl_parse_garmin("./test/basic.fpl");
+	if (fpl == NULL) {
+	// We can get a more detailed error.
+	flightplan_error *err = fpl_last_error();
 		printf("error: %s\n", fpl_error_message(err));
 		fpl_cleanup();
-        return 1;
-    }
+		return 1;
+		}
 
 	// Iterate and output the full ordered route.
-    int max = fpl_route_points_count(fpl);
-    printf("\nroute: \"%s\" (points: %d)\n", fpl_route_name(fpl), max);
-    for (int i = 0; i < max; i++) {
-        flightplan_route_point *point = fpl_route_points_get(fpl, i);
-        printf("  %s\n", fpl_route_point_identifier(point));
-    }
+	int max = fpl_route_points_count(fpl);
+	printf("\nroute: \"%s\" (points: %d)\n", fpl_route_name(fpl), max);
+	for (int i = 0; i < max; i++) {
+		flightplan_route_point *point = fpl_route_points_get(fpl, i);
+		printf("  %s\n", fpl_route_point_identifier(point));
+	}
 
-    fpl_free(fpl);
-    fpl_cleanup();
-    return 0;
+	fpl_free(fpl);
+	fpl_cleanup();
+	return 0;
 }
 ```
