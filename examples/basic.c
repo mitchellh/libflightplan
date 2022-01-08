@@ -8,7 +8,8 @@ int main() {
         return 1;
     }
 
-    printf("created at: %s\n", fpl_get_created(fpl));
+    printf("created at: %s\n", fpl_created(fpl));
+    printf("waypoints: %d\n", fpl_waypoints_count(fpl));
 
     fpl_free(fpl);
     return 0;

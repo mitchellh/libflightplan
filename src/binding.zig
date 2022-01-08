@@ -40,7 +40,7 @@ export fn fpl_set_created(raw: ?*c.flightplan, str: [*:0]const u8) u8 {
     return 0;
 }
 
-export fn fpl_get_created(raw: ?*c.flightplan) ?[*:0]const u8 {
+export fn fpl_created(raw: ?*c.flightplan) ?[*:0]const u8 {
     if (flightplan(raw)) |fpl| {
         if (fpl.created) |v| {
             return v.ptr;
@@ -64,4 +64,15 @@ pub fn cflightplan(fpl: FlightPlan) ?*c.flightplan {
     const result = c_allocator.create(FlightPlan) catch return null;
     result.* = fpl;
     return @ptrCast(?*c.flightplan, result);
+}
+
+//-------------------------------------------------------------------
+// Waypoints
+
+export fn fpl_waypoints_count(raw: ?*c.flightplan) c_int {
+    if (flightplan(raw)) |fpl| {
+        return @intCast(c_int, fpl.waypoints.count());
+    }
+
+    return 0;
 }
