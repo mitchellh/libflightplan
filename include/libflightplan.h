@@ -101,5 +101,6 @@ flightplan_waypoint *fpl_waypoints_next(flightplan_waypoint_iter *);
 
 flightplan_waypoint *fpl_waypoint_new();
 void fpl_waypoint_free(flightplan_waypoint *);
+char *fpl_waypoint_identifier(flightplan_waypoint *);
 
 #endif

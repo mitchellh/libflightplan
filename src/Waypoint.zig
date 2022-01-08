@@ -8,15 +8,15 @@ const mem = std.mem;
 
 /// Name of the waypoint. This is a key that is used by the route to lookup
 /// the waypoint.
-identifier: []const u8,
+identifier: [:0]const u8,
 
 /// Type of the waypoint, such as VOR, NDB, etc.
 type: Type,
 
 /// Latitude and longitude of this waypoint. This is in a string format
 /// so we don't have to parse arbitrary decimals.
-lat: []const u8,
-lon: []const u8,
+lat: [:0]const u8,
+lon: [:0]const u8,
 
 pub const Type = enum {
     user_waypoint,

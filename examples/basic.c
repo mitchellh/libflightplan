@@ -11,6 +11,17 @@ int main() {
     printf("created at: %s\n", fpl_created(fpl));
     printf("waypoints: %d\n", fpl_waypoints_count(fpl));
 
+    flightplan_waypoint_iter *iter = fpl_waypoints_iter(fpl);
+    while (1) {
+        flightplan_waypoint *wp = fpl_waypoints_next(iter);
+        if (wp == NULL) {
+            break;
+        }
+
+        printf("  %s\n", fpl_waypoint_identifier(wp));
+    }
+    fpl_waypoint_iter_free(iter);
+
     fpl_free(fpl);
     return 0;
 }

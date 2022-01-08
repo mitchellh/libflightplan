@@ -154,15 +154,15 @@ pub fn parseWaypoint(alloc: Allocator, node: *c.xmlNode) !Waypoint {
         if (c.xmlStrcmp(n.name, "identifier") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            self.identifier = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            self.identifier = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
         } else if (c.xmlStrcmp(n.name, "lat") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            self.lat = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            self.lat = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
         } else if (c.xmlStrcmp(n.name, "lon") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            self.lon = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            self.lon = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
         } else if (c.xmlStrcmp(n.name, "type") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
