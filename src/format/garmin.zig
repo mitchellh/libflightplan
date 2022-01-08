@@ -192,5 +192,6 @@ test "basic reading" {
         try testing.expectEqualStrings(wp.lat, "33.92286102713828");
         try testing.expectEqualStrings(wp.lon, "-118.3350830946681");
         try testing.expectEqual(wp.type, .airport);
+        try testing.expectEqualStrings(wp.type.toString(), "AIRPORT");
     }
 }

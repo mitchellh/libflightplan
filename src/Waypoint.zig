@@ -43,6 +43,17 @@ pub const Type = enum {
 
         @panic("invalid waypoint type");
     }
+
+    pub fn toString(self: Type) []const u8 {
+        return switch (self) {
+            .user_waypoint => "USER WAYPOINT",
+            .airport => "AIRPORT",
+            .ndb => "NDB",
+            .vor => "VOR",
+            .int => "INT",
+            .int_vrp => "INT-VRP",
+        };
+    }
 };
 
 pub fn deinit(self: *Self, alloc: Allocator) void {
