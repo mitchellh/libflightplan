@@ -1,16 +1,31 @@
 // This file contains the C bindings that are exported when building
 // the system libraries.
+//
+// WHERE IS THE DOCUMENTATION? Note that all the documentation for the C
+// interface is in the header file libflightplan.h. The implementation for
+// these various functions may have some comments but are meant towards
+// maintainers.
 
 const std = @import("std");
 const Allocator = std.mem.Allocator;
 const c_allocator = std.heap.c_allocator;
 
-const c = @cImport({
+const lib = @import("main.zig");
+const FlightPlan = lib.FlightPlan;
+
+/// The C headers for our binding. This is public so that formats can
+/// import this and use these for types.
+pub const c = @cImport({
     @cInclude("libflightplan.h");
 });
 
-const lib = @import("main.zig");
-const FlightPlan = lib.FlightPlan;
+//-------------------------------------------------------------------
+// Formats
+
+pub usingnamespace @import("format/garmin.zig").Binding;
+
+//-------------------------------------------------------------------
+// General functions
 
 export fn fpl_new() ?*c.flightplan {
     const result = c_allocator.create(FlightPlan) catch return null;
@@ -26,12 +41,17 @@ export fn fpl_set_created(raw: ?*c.flightplan, str: [*:0]const u8) u8 {
 }
 
 export fn fpl_free(raw: ?*c.flightplan) void {
-    const fpl = @ptrCast(?*FlightPlan, @alignCast(@alignOf(?*FlightPlan), raw));
-    if (fpl) |v| {
+    if (flightplan(raw)) |v| {
         v.deinit();
     }
 }
 
-fn flightplan(raw: ?*c.flightplan) ?*FlightPlan {
+pub fn flightplan(raw: ?*c.flightplan) ?*FlightPlan {
     return @ptrCast(?*FlightPlan, @alignCast(@alignOf(?*FlightPlan), raw));
+}
+
+pub fn cflightplan(fpl: FlightPlan) ?*c.flightplan {
+    const result = c_allocator.create(FlightPlan) catch return null;
+    result.* = fpl;
+    return @ptrCast(?*c.flightplan, result);
 }

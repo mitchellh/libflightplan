@@ -35,7 +35,6 @@ pub fn build(b: *Builder) void {
         static_binding_test.linkLibrary(static_lib);
 
         const static_binding_test_run = static_binding_test.run();
-        static_binding_test_run.cwd = "zig-cache";
 
         const test_step = b.step("test", "Run all tests");
         test_step.dependOn(&lib_tests.step);
@@ -54,4 +53,5 @@ fn initNativeLibrary(
     lib.addIncludeDir("src/include");
     lib.addIncludeDir("include");
     lib.linkLibC();
+    lib.linkSystemLibrary("libxml-2.0");
 }

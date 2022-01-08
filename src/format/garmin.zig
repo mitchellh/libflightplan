@@ -16,6 +16,17 @@ const c = xml.c;
 const Error = @import("../errors.zig").Error;
 const Route = @import("../Route.zig");
 
+/// Binding are the C bindings for this format.
+pub const Binding = struct {
+    const binding = @import("../binding.zig");
+    const c_allocator = std.heap.c_allocator;
+
+    export fn fpl_parse_garmin(path: [*:0]const u8) ?*binding.c.flightplan {
+        var fpl = parseFromFile(c_allocator, mem.sliceTo(path, 0)) catch return null;
+        return binding.cflightplan(fpl);
+    }
+};
+
 pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
     // Read the file
     // TODO: errors
