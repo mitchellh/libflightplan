@@ -25,7 +25,7 @@ for each are shown below.
 ### C
 
 The C API is documented in the
-[libflightplan.h header file](https://github.com/mitchellh/libflightplan/blob/main/include/libflightplan.h).
+[flightplan.h header file](https://github.com/mitchellh/libflightplan/blob/main/include/flightplan.h).
 An example program is available in [`examples/basic.c`](https://github.com/mitchellh/libflightplan/blob/main/examples/basic.c),
 and a simplified version is reproduced below. This example shows how to
 read and extract information from a ForeFlight flight plan.
@@ -38,7 +38,7 @@ and integrated with other build systems.
 ```c
 #include <stddef.h>
 #include <stdio.h>
-#include <libflightplan.h>
+#include <flightplan.h>
 
 int main() {
 	// Parse our flight plan from an FPL file out of ForeFlight.

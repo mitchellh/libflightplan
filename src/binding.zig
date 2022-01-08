@@ -2,7 +2,7 @@
 // the system libraries.
 //
 // WHERE IS THE DOCUMENTATION? Note that all the documentation for the C
-// interface is in the header file libflightplan.h. The implementation for
+// interface is in the header file flightplan.h. The implementation for
 // these various functions may have some comments but are meant towards
 // maintainers.
 
@@ -19,7 +19,7 @@ const testutil = @import("test.zig");
 /// The C headers for our binding. This is public so that formats can
 /// import this and use these for types.
 pub const c = @cImport({
-    @cInclude("libflightplan.h");
+    @cInclude("flightplan.h");
 });
 
 //-------------------------------------------------------------------

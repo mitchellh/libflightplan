@@ -28,6 +28,13 @@ pub fn build(b: *Builder) void {
     initNativeLibrary(dynamic_lib, mode, target);
     dynamic_lib.install();
 
+    const install_header = b.addInstallFileWithDir(
+        .{ .path = "include/flightplan.h" },
+        .header,
+        "flightplan.h",
+    );
+    b.getInstallStep().dependOn(&install_header.step);
+
     // Defaults
     b.default_step.dependOn(&static_lib.step);
     b.default_step.dependOn(&dynamic_lib.step);

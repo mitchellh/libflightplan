@@ -1,6 +1,6 @@
 #include <stddef.h>
 #include <stdio.h>
-#include <libflightplan.h>
+#include <flightplan.h>
 
 int main() {
     // Parse our flight plan from an FPL file out of ForeFlight.
