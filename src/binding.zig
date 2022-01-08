@@ -139,8 +139,6 @@ pub fn waypointIter(raw: ?*c.flightplan_waypoint_iter) ?*WPIterator {
 //-------------------------------------------------------------------
 // Route
 
-const RouteIterator = std.meta.fieldInfo(Route, .points).field_type.Iterator;
-
 export fn fpl_route_name(raw: ?*c.flightplan) ?[*:0]const u8 {
     const fpl = flightplan(raw) orelse return null;
     if (fpl.route.name) |v| {
