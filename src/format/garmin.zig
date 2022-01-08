@@ -112,7 +112,7 @@ pub fn parseRoute(alloc: Allocator, node: *c.xmlNode) !Route {
         if (c.xmlStrcmp(n.name, "route-name") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            self.name = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            self.name = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
         } else if (c.xmlStrcmp(n.name, "route-point") == 0) {
             try parseRoutePoint(&self, alloc, n);
         }
@@ -131,7 +131,7 @@ fn parseRoutePoint(self: *Route, alloc: Allocator, node: *c.xmlNode) !void {
         if (c.xmlStrcmp(n.name, "waypoint-identifier") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            const zcopy = try Allocator.dupe(alloc, u8, mem.sliceTo(copy, 0));
+            const zcopy = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
             try self.points.append(alloc, zcopy);
         }
     }
