@@ -30,6 +30,10 @@ pub usingnamespace @import("format/garmin.zig").Binding;
 //-------------------------------------------------------------------
 // General functions
 
+export fn fpl_cleanup() void {
+    lib.deinit();
+}
+
 export fn fpl_new() ?*c.flightplan {
     const result = c_allocator.create(FlightPlan) catch return null;
     result.* = FlightPlan{ .alloc = c_allocator };

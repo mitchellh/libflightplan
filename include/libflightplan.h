@@ -1,6 +1,17 @@
 #ifndef LIBFLIGHTPLAN_H_GUARD
 #define LIBFLIGHTPLAN_H_GUARD
 
+/*
+ * NAME fpl_cleanup()
+ *
+ * DESCRIPTION
+ *
+ * This should be called when the process is done using this library
+ * to perform any global level memory cleanup (really just any errors).
+ * This is safe to call multiple times.
+ * */
+void fpl_cleanup();
+
 // A flightplan represents the primary flightplan data structure.
 typedef void flightplan;
 

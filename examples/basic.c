@@ -35,5 +35,6 @@ int main() {
     }
 
     fpl_free(fpl);
+    fpl_cleanup();
     return 0;
 }
