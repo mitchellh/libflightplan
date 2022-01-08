@@ -11,6 +11,7 @@ const Allocator = std.mem.Allocator;
 const c_allocator = std.heap.c_allocator;
 
 const lib = @import("main.zig");
+const Error = lib.Error;
 const FlightPlan = lib.FlightPlan;
 const Waypoint = lib.Waypoint;
 const Route = lib.Route;
@@ -72,6 +73,23 @@ pub fn cflightplan(fpl: FlightPlan) ?*c.flightplan {
     const result = c_allocator.create(FlightPlan) catch return null;
     result.* = fpl;
     return @ptrCast(?*c.flightplan, result);
+}
+
+//-------------------------------------------------------------------
+// Errors
+
+export fn fpl_last_error() ?*c.flightplan_error {
+    const err = Error.lastError() orelse return null;
+    return @ptrCast(?*c.flightplan_error, err);
+}
+
+export fn fpl_error_message(raw: ?*c.flightplan_error) ?[*:0]const u8 {
+    const err = errptr(raw) orelse return null;
+    return err.message().ptr;
+}
+
+pub fn errptr(raw: ?*c.flightplan_error) ?*Error {
+    return @ptrCast(?*Error, @alignCast(@alignOf(?*Error), raw));
 }
 
 //-------------------------------------------------------------------

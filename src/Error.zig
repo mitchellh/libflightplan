@@ -30,7 +30,7 @@ detail: ?Detail = null,
 /// Extra details for an error. What is set is dependent on what raised the error.
 pub const Detail = union(enum) {
     /// message is a basic string message.
-    message: ManagedString,
+    string: String,
 
     /// xml-specific error message (typically a parse error)
     xml: XMLDetail,
@@ -38,14 +38,14 @@ pub const Detail = union(enum) {
     /// Gets a human-friendly message regardless of type.
     pub fn message(self: *Detail) [:0]const u8 {
         switch (self.*) {
-            .message => |*v| return v.message,
+            .string => |*v| return v.message,
             .xml => |*v| return v.message(),
         }
     }
 
     pub fn deinit(self: Detail) void {
         switch (self) {
-            .message => |v| v.deinit(),
+            .string => |v| v.deinit(),
             .xml => |v| v.deinit(),
         }
     }
@@ -69,16 +69,16 @@ pub const Detail = union(enum) {
         }
     };
 
-    pub const ManagedString = struct {
+    pub const String = struct {
         alloc: Allocator,
         message: [:0]const u8,
 
-        pub fn init(alloc: Allocator, comptime fmt: []const u8, args: anytype) !ManagedString {
+        pub fn init(alloc: Allocator, comptime fmt: []const u8, args: anytype) !String {
             const msg = try std.fmt.allocPrintZ(alloc, fmt, args);
-            return ManagedString{ .alloc = alloc, .message = msg };
+            return String{ .alloc = alloc, .message = msg };
         }
 
-        pub fn deinit(self: ManagedString) void {
+        pub fn deinit(self: String) void {
             self.alloc.free(self.message);
         }
     };
@@ -87,7 +87,7 @@ pub const Detail = union(enum) {
 /// Helper to easily initialize an error with a message.
 pub fn initMessage(alloc: Allocator, code: Set, comptime fmt: []const u8, args: anytype) !Self {
     const detail = Detail{
-        .message = try Detail.ManagedString.init(alloc, fmt, args),
+        .string = try Detail.String.init(alloc, fmt, args),
     };
     return Self{
         .code = code,
@@ -112,8 +112,12 @@ pub fn deinit(self: Self) void {
 }
 
 /// Return the last error (if any).
-pub inline fn lastError() ?Self {
-    return _lastError;
+pub inline fn lastError() ?*Self {
+    if (_lastError) |*err| {
+        return err;
+    }
+
+    return null;
 }
 
 // Set a new last error.

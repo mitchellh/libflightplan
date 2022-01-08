@@ -49,6 +49,35 @@ void fpl_free(flightplan *);
 char *fpl_created(flightplan *);
 
 /**************************************************************************
+ * Errors
+ *************************************************************************/
+
+typedef void flightplan_error;
+
+/*
+ * NAME fpl_last_error()
+ *
+ * DESCRIPTION
+ *
+ * Returns the last error (if any). An error can be set in any situation
+ * where a function returns NULL or otherwise noted by the documentation.
+ * The error doesn't need to be freed; any memory associated with error storage
+ * is freed when fpl_cleanup is called.
+ *
+ * This error is only valid until another error occurs.
+ * */
+flightplan_error *fpl_last_error();
+
+/*
+ * NAME fpl_error_message()
+ *
+ * DESCRIPTION
+ *
+ * Returns a human-friendly error message for this error.
+ * */
+char *fpl_error_message(flightplan_error *);
+
+/**************************************************************************
  * Import/Export
  *************************************************************************/
 
