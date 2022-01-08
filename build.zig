@@ -62,6 +62,9 @@ pub fn build(b: *Builder) void {
         test_step.dependOn(&lib_tests.step);
         test_step.dependOn(&static_binding_test_run.step);
         test_step.dependOn(&dynamic_binding_test_run.step);
+
+        const test_unit_step = b.step("test-unit", "Run unit tests only");
+        test_unit_step.dependOn(&lib_tests.step);
     }
 }
 

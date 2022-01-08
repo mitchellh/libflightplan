@@ -8,7 +8,6 @@ const hash_map = std.hash_map;
 const Allocator = std.mem.Allocator;
 
 const Waypoint = @import("Waypoint.zig");
-const Error = @import("errors.zig").Error;
 const Route = @import("Route.zig");
 
 /// Allocator associated with this FlightPlan. This allocator must be

@@ -13,7 +13,8 @@ const Waypoint = @import("../Waypoint.zig");
 const testutil = @import("../test.zig");
 const xml = @import("../xml.zig");
 const c = xml.c;
-const Error = @import("../errors.zig").Error;
+const Error = @import("../Error.zig");
+const ErrorSet = Error.Set;
 const Route = @import("../Route.zig");
 
 /// Binding are the C bindings for this format.
@@ -28,12 +29,28 @@ pub const Binding = struct {
 };
 
 pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
-    // Read the file
-    // TODO: errors
-    const doc = c.xmlReadFile(path.ptr, null, 0);
-    if (doc == null) {
-        return Error.ReadFailed;
+    // Create a parser context. We use the context form rather than the global
+    // xmlReadFile form so that we can be a little more thread safe.
+    const ctx = c.xmlNewParserCtxt();
+    if (ctx == null) {
+        return ErrorSet.ReadFailed;
     }
+    // NOTE: we do not defer freeing the context cause we want to preserve
+    // the context if there are any errors.
+
+    // Read the file
+    const doc = c.xmlCtxtReadFile(ctx, path.ptr, null, 0);
+    if (doc == null) {
+        Error.setLastError(.{
+            .code = ErrorSet.ReadFailed,
+            .detail = .{
+                .xml = .{ .ctx = ctx },
+            },
+        });
+
+        return ErrorSet.ReadFailed;
+    }
+    defer c.xmlFreeParserCtxt(ctx);
     defer c.xmlFreeDoc(doc);
 
     // Get the root elem
@@ -44,12 +61,12 @@ pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
 fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
     // Should be an opening node
     if (node.type != c.XML_ELEMENT_NODE) {
-        return Error.NodeExpected;
+        return ErrorSet.NodeExpected;
     }
 
     // Should be a "flight-plan" node.
     if (c.xmlStrcmp(node.name, "flight-plan") != 0) {
-        return Error.InvalidElement;
+        return ErrorSet.InvalidElement;
     }
 
     const WPType = comptime std.meta.fieldInfo(FlightPlan, .waypoints).field_type;
@@ -194,4 +211,13 @@ test "basic reading" {
         try testing.expectEqual(wp.type, .airport);
         try testing.expectEqualStrings(wp.type.toString(), "AIRPORT");
     }
+}
+
+test "parse error" {
+    const testPath = testutil.testFile("error_syntax.fpl");
+    try testing.expectError(ErrorSet.ReadFailed, parseFromFile(testing.allocator, testPath));
+
+    var lastErr = Error.lastError.?;
+    defer lastErr.deinit();
+    try testing.expectEqual(lastErr.code, ErrorSet.ReadFailed);
 }
