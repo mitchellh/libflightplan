@@ -164,4 +164,49 @@ flightplan_waypoint_type fpl_waypoint_type(flightplan_waypoint *);
  */
 char *fpl_waypoint_type_str(flightplan_waypoint_type);
 
+/**************************************************************************
+ * Route
+ *************************************************************************/
+
+typedef void flightplan_route_point;
+typedef void flightplan_route_point_iter;
+
+/*
+ * NAME fpl_route_name()
+ *
+ * DESCRIPTION
+ *
+ * The name of the route.
+ */
+char *fpl_route_name(flightplan *);
+
+/*
+ * NAME fpl_route_points_count()
+ *
+ * DESCRIPTION
+ *
+ * Returns the total number of route points that are in this flight plan.
+ */
+int fpl_route_points_count(flightplan *);
+
+/*
+ * NAME fpl_route_points_get()
+ *
+ * DESCRIPTION
+ *
+ * Returns the route point at the given index in the route. index must be
+ * greater than 0 and less than fpl_route_points_count().
+ */
+flightplan_route_point *fpl_route_points_get(flightplan *, int);
+
+/*
+ * NAME fpl_route_point_identifier()
+ *
+ * DESCRIPTION
+ *
+ * Returns the identifier of this route point. This should match a waypoint
+ * in the flight plan if it is validly formed.
+ */
+char *fpl_route_point_identifier(flightplan_route_point *);
+
 #endif

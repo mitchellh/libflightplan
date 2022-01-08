@@ -13,6 +13,7 @@ const c_allocator = std.heap.c_allocator;
 const lib = @import("main.zig");
 const FlightPlan = lib.FlightPlan;
 const Waypoint = lib.Waypoint;
+const Route = lib.Route;
 const testutil = @import("test.zig");
 
 /// The C headers for our binding. This is public so that formats can
@@ -133,4 +134,36 @@ pub fn waypoint(raw: ?*c.flightplan_waypoint) ?*Waypoint {
 }
 pub fn waypointIter(raw: ?*c.flightplan_waypoint_iter) ?*WPIterator {
     return @ptrCast(?*WPIterator, @alignCast(@alignOf(?*WPIterator), raw));
+}
+
+//-------------------------------------------------------------------
+// Route
+
+const RouteIterator = std.meta.fieldInfo(Route, .points).field_type.Iterator;
+
+export fn fpl_route_name(raw: ?*c.flightplan) ?[*:0]const u8 {
+    const fpl = flightplan(raw) orelse return null;
+    if (fpl.route.name) |v| {
+        return v.ptr;
+    }
+
+    return null;
+}
+
+export fn fpl_route_points_count(raw: ?*c.flightplan) c_int {
+    const fpl = flightplan(raw) orelse return 0;
+    return @intCast(c_int, fpl.route.points.items.len);
+}
+
+export fn fpl_route_points_get(raw: ?*c.flightplan, idx: c_int) ?*c.flightplan_route_point {
+    const fpl = flightplan(raw) orelse return null;
+    const val = fpl.route.points.items[@intCast(usize, idx)];
+
+    // have to use intToPtr to avoid const qualifier discard
+    return @intToPtr(*c.flightplan_route_point, @ptrToInt(val.ptr));
+}
+
+export fn fpl_route_point_identifier(raw: ?*c.flightplan_route_point) ?[*:0]const u8 {
+    const ptr = raw orelse return null;
+    return @ptrCast(?[*:0]const u8, ptr);
 }
