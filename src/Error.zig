@@ -86,3 +86,18 @@ pub fn setLastError(err: ?Self) void {
 
     lastError = err;
 }
+
+test "set last error" {
+    // Setting it while null does nothing
+    setLastError(null);
+    setLastError(null);
+
+    // Can set and retrieve
+    setLastError(Self{ .code = Set.ReadFailed });
+    const err = lastError.?;
+    try std.testing.expectEqual(err.code, Set.ReadFailed);
+
+    // Can set to null
+    setLastError(null);
+    try std.testing.expect(lastError == null);
+}

@@ -16,6 +16,7 @@ pub fn deinit() void {
 }
 
 test {
+    _ = Error;
     _ = FlightPlan;
     _ = Format.Garmin;
 }
