@@ -1,6 +1,10 @@
 #ifndef LIBFLIGHTPLAN_H_GUARD
 #define LIBFLIGHTPLAN_H_GUARD
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 /*
  * NAME fpl_cleanup()
  *
@@ -248,5 +252,9 @@ flightplan_route_point *fpl_route_points_get(flightplan *, int);
  * in the flight plan if it is validly formed.
  */
 char *fpl_route_point_identifier(flightplan_route_point *);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif
