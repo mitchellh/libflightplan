@@ -28,7 +28,7 @@ pub const Binding = struct {
     }
 };
 
-pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
+pub fn parseFromFile(alloc: Allocator, path: [:0]const u8) !FlightPlan {
     // Create a parser context. We use the context form rather than the global
     // xmlReadFile form so that we can be a little more thread safe.
     const ctx = c.xmlNewParserCtxt();
@@ -67,6 +67,18 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
 
     // Should be a "flight-plan" node.
     if (c.xmlStrcmp(node.name, "flight-plan") != 0) {
+        const detail = Error.Detail{
+            .message = try Error.Detail.ManagedString.init(
+                alloc,
+                "flight-plan element not found",
+                .{},
+            ),
+        };
+        Error.setLastError(Error{
+            .code = ErrorSet.InvalidElement,
+            .detail = detail,
+        });
+
         return ErrorSet.InvalidElement;
     }
 
@@ -192,7 +204,8 @@ pub fn parseWaypoint(alloc: Allocator, node: *c.xmlNode) !Waypoint {
 }
 
 test "basic reading" {
-    const testPath = testutil.testFile("basic.fpl");
+    const testPath = try testutil.testFile(testing.allocator, "basic.fpl");
+    defer testing.allocator.free(testPath);
     var plan = try parseFromFile(testing.allocator, testPath);
     defer plan.deinit();
 
@@ -215,14 +228,25 @@ test "basic reading" {
 }
 
 test "parse error" {
-    const testPath = testutil.testFile("error_syntax.fpl");
+    const testPath = try testutil.testFile(testing.allocator, "error_syntax.fpl");
+    defer testing.allocator.free(testPath);
     try testing.expectError(ErrorSet.ReadFailed, parseFromFile(testing.allocator, testPath));
 
-    var lastErr = Error.lastError.?;
-    defer lastErr.deinit();
+    var lastErr = Error.lastError().?;
+    defer Error.setLastError(null);
     try testing.expectEqual(lastErr.code, ErrorSet.ReadFailed);
 
     const xmlErr = lastErr.detail.?.xml.err();
     const message = mem.span(xmlErr.?.message);
     try testing.expect(message.len > 0);
+}
+
+test "error: no flight-plan" {
+    const testPath = try testutil.testFile(testing.allocator, "error_no_flightplan.fpl");
+    defer testing.allocator.free(testPath);
+    try testing.expectError(ErrorSet.InvalidElement, parseFromFile(testing.allocator, testPath));
+
+    var lastErr = Error.lastError().?;
+    defer Error.setLastError(null);
+    try testing.expectEqual(lastErr.code, ErrorSet.InvalidElement);
 }

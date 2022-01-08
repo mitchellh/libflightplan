@@ -1,9 +1,12 @@
 const std = @import("std");
+const Allocator = std.mem.Allocator;
 
 /// Get the path to a test fixture file. This should only be used in tests
-/// since it depends on a predictable source path.
-pub fn testFile(comptime path: []const u8) []const u8 {
-    comptime {
+/// since it depends on a predictable source path. This returns a null-terminated
+/// string slice so that it can be used directly with C APIs (libxml), but
+/// the cost is then it must be freed.
+pub fn testFile(alloc: Allocator, comptime path: []const u8) ![:0]const u8 {
+    const slicePath = comptime blk: {
         const sepSlice = &[_]u8{std.fs.path.sep};
 
         // Build our path which has our relative test directory.
@@ -26,6 +29,9 @@ pub fn testFile(comptime path: []const u8) []const u8 {
         const srcDir = std.fs.path.dirname(@src().file) orelse unreachable;
 
         // Add our path
-        return srcDir ++ finalPath;
-    }
+        break :blk srcDir ++ finalPath;
+    };
+
+    // Allocate so that we get sentinel-terminated
+    return try std.mem.Allocator.dupeZ(alloc, u8, slicePath);
 }
