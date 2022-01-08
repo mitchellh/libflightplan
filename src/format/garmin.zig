@@ -204,8 +204,7 @@ pub fn parseWaypoint(alloc: Allocator, node: *c.xmlNode) !Waypoint {
 }
 
 test "basic reading" {
-    const testPath = try testutil.testFile(testing.allocator, "basic.fpl");
-    defer testing.allocator.free(testPath);
+    const testPath = try testutil.testFile("basic.fpl");
     var plan = try parseFromFile(testing.allocator, testPath);
     defer plan.deinit();
 
@@ -228,8 +227,7 @@ test "basic reading" {
 }
 
 test "parse error" {
-    const testPath = try testutil.testFile(testing.allocator, "error_syntax.fpl");
-    defer testing.allocator.free(testPath);
+    const testPath = try testutil.testFile("error_syntax.fpl");
     try testing.expectError(ErrorSet.ReadFailed, parseFromFile(testing.allocator, testPath));
 
     var lastErr = Error.lastError().?;
@@ -242,8 +240,7 @@ test "parse error" {
 }
 
 test "error: no flight-plan" {
-    const testPath = try testutil.testFile(testing.allocator, "error_no_flightplan.fpl");
-    defer testing.allocator.free(testPath);
+    const testPath = try testutil.testFile("error_no_flightplan.fpl");
     try testing.expectError(ErrorSet.InvalidElement, parseFromFile(testing.allocator, testPath));
 
     var lastErr = Error.lastError().?;
