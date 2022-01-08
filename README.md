@@ -77,7 +77,7 @@ fn main() void {
 	var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
 	defer arena.deinit();
 
-	var fpl = try flightplan.Format.Garmin.parseFromFile(alloc, "./test/basic.fpl");
+	var fpl = try flightplan.Format.Garmin.initFromFile(alloc, "./test/basic.fpl");
 	defer fpl.deinit();
 
 	std.debug.print("route: \"{s}\" (points: {d})\n", .{

@@ -23,12 +23,12 @@ pub const Binding = struct {
     const c_allocator = std.heap.c_allocator;
 
     export fn fpl_parse_garmin(path: [*:0]const u8) ?*binding.c.flightplan {
-        var fpl = parseFromFile(c_allocator, mem.sliceTo(path, 0)) catch return null;
+        var fpl = initFromFile(c_allocator, mem.sliceTo(path, 0)) catch return null;
         return binding.cflightplan(fpl);
     }
 };
 
-pub fn parseFromFile(alloc: Allocator, path: [:0]const u8) !FlightPlan {
+pub fn initFromFile(alloc: Allocator, path: [:0]const u8) !FlightPlan {
     // Create a parser context. We use the context form rather than the global
     // xmlReadFile form so that we can be a little more thread safe.
     const ctx = c.xmlNewParserCtxt();
@@ -56,10 +56,10 @@ pub fn parseFromFile(alloc: Allocator, path: [:0]const u8) !FlightPlan {
 
     // Get the root elem
     const root = c.xmlDocGetRootElement(doc);
-    return parseFromXMLNode(alloc, root);
+    return initFromXMLNode(alloc, root);
 }
 
-fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
+fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
     // Should be an opening node
     if (node.type != c.XML_ELEMENT_NODE) {
         return ErrorSet.NodeExpected;
@@ -200,7 +200,7 @@ pub fn parseWaypoint(alloc: Allocator, node: *c.xmlNode) !Waypoint {
 
 test "basic reading" {
     const testPath = try testutil.testFile("basic.fpl");
-    var plan = try parseFromFile(testing.allocator, testPath);
+    var plan = try initFromFile(testing.allocator, testPath);
     defer plan.deinit();
 
     try testing.expectEqualStrings(plan.created.?, "20211230T22:07:20Z");
@@ -223,7 +223,7 @@ test "basic reading" {
 
 test "parse error" {
     const testPath = try testutil.testFile("error_syntax.fpl");
-    try testing.expectError(ErrorSet.ReadFailed, parseFromFile(testing.allocator, testPath));
+    try testing.expectError(ErrorSet.ReadFailed, initFromFile(testing.allocator, testPath));
 
     var lastErr = Error.lastError().?;
     defer Error.setLastError(null);
@@ -236,7 +236,7 @@ test "parse error" {
 
 test "error: no flight-plan" {
     const testPath = try testutil.testFile("error_no_flightplan.fpl");
-    try testing.expectError(ErrorSet.InvalidElement, parseFromFile(testing.allocator, testPath));
+    try testing.expectError(ErrorSet.InvalidElement, initFromFile(testing.allocator, testPath));
 
     var lastErr = Error.lastError().?;
     defer Error.setLastError(null);
