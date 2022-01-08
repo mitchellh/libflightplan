@@ -1,5 +1,6 @@
 const Self = @This();
 
+const std = @import("std");
 const c = @import("xml.zig").c;
 
 /// Possible errors that can be returned by many of the functions
@@ -28,6 +29,12 @@ detail: ?Detail = null,
 pub const Detail = union(enum) {
     xml: XMLDetail,
 
+    pub fn message(self: *Detail) [:0]const u8 {
+        switch (self.*) {
+            .xml => |*v| return v.message(),
+        }
+    }
+
     pub fn deinit(self: Detail) void {
         switch (self) {
             .xml => |v| v.deinit(),
@@ -44,10 +51,24 @@ pub const XMLDetail = struct {
         return c.xmlCtxtGetLastError(self.ctx);
     }
 
+    pub fn message(self: *XMLDetail) [:0]const u8 {
+        const v = self.err() orelse return "no error";
+        return std.mem.span(v.message);
+    }
+
     pub fn deinit(self: XMLDetail) void {
         c.xmlFreeParserCtxt(self.ctx);
     }
 };
+
+/// Returns a human-friendly message about the error.
+pub fn message(self: *Self) [:0]const u8 {
+    if (self.detail) |*detail| {
+        return detail.message();
+    }
+
+    return "no error message";
+}
 
 /// Release resources associated with an error.
 pub fn deinit(self: Self) void {
