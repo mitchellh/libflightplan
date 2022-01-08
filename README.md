@@ -49,7 +49,7 @@ int main() {
 		printf("error: %s\n", fpl_error_message(err));
 		fpl_cleanup();
 		return 1;
-		}
+	}
 
 	// Iterate and output the full ordered route.
 	int max = fpl_route_points_count(fpl);
