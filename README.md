@@ -7,7 +7,7 @@ airport, etc. This library is written primarily in Zig but exports a C ABI
 compatible shared and static library so that any programming language that
 can interface with C can interface with this library.
 
-**Library status: Pre-Alpha.** This library is _brand new_, supports
+**Library status: Unstable.** This library is _brand new_, supports
 a whopping _one_ format, and is not widely used at the moment.
 
 ## Formats
