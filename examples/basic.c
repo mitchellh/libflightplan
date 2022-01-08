@@ -28,7 +28,7 @@ int main() {
     fpl_waypoint_iter_free(iter);
 
     int max = fpl_route_points_count(fpl);
-    printf("\nroute: %d\n", max);
+    printf("\nroute: \"%s\" (points: %d)\n", fpl_route_name(fpl), max);
     for (int i = 0; i < max; i++) {
         flightplan_route_point *point = fpl_route_points_get(fpl, i);
         printf("  %s\n", fpl_route_point_identifier(point));
