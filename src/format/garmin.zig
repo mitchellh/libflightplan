@@ -33,6 +33,7 @@ pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
     // xmlReadFile form so that we can be a little more thread safe.
     const ctx = c.xmlNewParserCtxt();
     if (ctx == null) {
+        Error.setLastError(null);
         return ErrorSet.ReadFailed;
     }
     // NOTE: we do not defer freeing the context cause we want to preserve
@@ -41,11 +42,11 @@ pub fn parseFromFile(alloc: Allocator, path: []const u8) !FlightPlan {
     // Read the file
     const doc = c.xmlCtxtReadFile(ctx, path.ptr, null, 0);
     if (doc == null) {
-        Error.setLastError(.{
+        // Can't nest it all due to: https://github.com/ziglang/zig/issues/6043
+        const detail = Error.Detail{ .xml = .{ .ctx = ctx } };
+        Error.setLastError(Error{
             .code = ErrorSet.ReadFailed,
-            .detail = .{
-                .xml = .{ .ctx = ctx },
-            },
+            .detail = detail,
         });
 
         return ErrorSet.ReadFailed;
@@ -220,4 +221,8 @@ test "parse error" {
     var lastErr = Error.lastError.?;
     defer lastErr.deinit();
     try testing.expectEqual(lastErr.code, ErrorSet.ReadFailed);
+
+    const xmlErr = lastErr.detail.?.xml.err();
+    const message = mem.span(xmlErr.?.message);
+    try testing.expect(message.len > 0);
 }

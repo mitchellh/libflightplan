@@ -44,23 +44,20 @@ pub const XMLDetail = struct {
         return c.xmlCtxtGetLastError(self.ctx);
     }
 
-    pub fn deinit(self: *XMLDetail) void {
+    pub fn deinit(self: XMLDetail) void {
         c.xmlFreeParserCtxt(self.ctx);
-        self.* = undefined;
     }
 };
 
 /// Release resources associated with an error.
-pub fn deinit(self: *Self) void {
+pub fn deinit(self: Self) void {
     if (self.detail) |detail| {
         detail.deinit();
     }
-
-    self.* = undefined;
 }
 
 // Set a new last error.
-pub fn setLastError(err: Self) void {
+pub fn setLastError(err: ?Self) void {
     // Unset previous error if there is one.
     if (lastError) |last| {
         last.deinit();
