@@ -5,7 +5,9 @@
 // to fields within the struct.
 typedef struct _flightplan flightplan;
 
-flightplan *fpl_parse_garmin(char *);
+char *fpl_get_created(flightplan *);
 void fpl_free(flightplan *);
+
+flightplan *fpl_parse_garmin(char *);
 
 #endif

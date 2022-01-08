@@ -15,7 +15,7 @@ const Route = @import("Route.zig");
 /// used for all the memory owned by this structure for deinit to work.
 alloc: Allocator,
 
-created: ?[]const u8 = null,
+created: ?[:0]const u8 = null,
 
 /// Waypoints that are part of the route. These are unordered, they are
 /// just the full list of possible waypoints that the route may contain.

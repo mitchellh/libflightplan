@@ -1,4 +1,5 @@
 #include <stddef.h>
+#include <stdio.h>
 #include <libflightplan.h>
 
 int main() {
@@ -6,6 +7,8 @@ int main() {
     if (fpl == NULL) {
         return 1;
     }
+
+    printf("created at: %s\n", fpl_get_created(fpl));
 
     fpl_free(fpl);
     return 0;

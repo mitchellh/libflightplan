@@ -36,8 +36,18 @@ export fn fpl_new() ?*c.flightplan {
 export fn fpl_set_created(raw: ?*c.flightplan, str: [*:0]const u8) u8 {
     const fpl = flightplan(raw) orelse return 1;
     const copy = std.mem.span(str);
-    fpl.created = Allocator.dupe(c_allocator, u8, copy) catch return 1;
+    fpl.created = Allocator.dupeZ(c_allocator, u8, copy) catch return 1;
     return 0;
+}
+
+export fn fpl_get_created(raw: ?*c.flightplan) ?[*:0]const u8 {
+    if (flightplan(raw)) |fpl| {
+        if (fpl.created) |v| {
+            return v.ptr;
+        }
+    }
+
+    return null;
 }
 
 export fn fpl_free(raw: ?*c.flightplan) void {

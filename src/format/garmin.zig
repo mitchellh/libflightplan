@@ -74,7 +74,7 @@ fn parseFlightPlan(self: *FlightPlan, node: *c.xmlNode) !void {
         if (c.xmlStrcmp(n.name, "created") == 0) {
             const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
             defer xml.free(copy);
-            self.created = try Allocator.dupe(self.alloc, u8, mem.sliceTo(copy, 0));
+            self.created = try Allocator.dupeZ(self.alloc, u8, mem.sliceTo(copy, 0));
         } else if (c.xmlStrcmp(n.name, "waypoint-table") == 0) {
             try parseWaypointTable(self, n);
         } else if (c.xmlStrcmp(n.name, "route") == 0) {
