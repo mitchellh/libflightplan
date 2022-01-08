@@ -20,9 +20,9 @@ pub fn build(b: *Builder) void {
 
     // Dynamic C lib
     const dynamic_lib_name = if (target.isWindows())
-        "libflightplan.dll"
+        "flightplan.dll"
     else
-        "libflightplan";
+        "flightplan";
 
     const dynamic_lib = b.addSharedLibrary(dynamic_lib_name, "src/binding.zig", .unversioned);
     initNativeLibrary(dynamic_lib, mode, target);
