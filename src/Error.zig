@@ -84,6 +84,17 @@ pub const Detail = union(enum) {
     };
 };
 
+/// Helper to easily initialize an error with a message.
+pub fn initMessage(alloc: Allocator, code: Set, comptime fmt: []const u8, args: anytype) !Self {
+    const detail = Detail{
+        .message = try Detail.ManagedString.init(alloc, fmt, args),
+    };
+    return Self{
+        .code = code,
+        .detail = detail,
+    };
+}
+
 /// Returns a human-friendly message about the error.
 pub fn message(self: *Self) [:0]const u8 {
     if (self.detail) |*detail| {

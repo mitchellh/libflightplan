@@ -67,17 +67,12 @@ fn parseFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
 
     // Should be a "flight-plan" node.
     if (c.xmlStrcmp(node.name, "flight-plan") != 0) {
-        const detail = Error.Detail{
-            .message = try Error.Detail.ManagedString.init(
-                alloc,
-                "flight-plan element not found",
-                .{},
-            ),
-        };
-        Error.setLastError(Error{
-            .code = ErrorSet.InvalidElement,
-            .detail = detail,
-        });
+        Error.setLastError(try Error.initMessage(
+            alloc,
+            ErrorSet.InvalidElement,
+            "flight-plan element not found",
+            .{},
+        ));
 
         return ErrorSet.InvalidElement;
     }
