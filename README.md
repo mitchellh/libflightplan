@@ -65,6 +65,31 @@ int main() {
 }
 ```
 
+### Zig
+
+```zig
+const std = @import("std");
+const flightplan = @import("flightplan");
+
+fn main() void {
+	defer flightplan.deinit();
+
+	var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+	defer arena.deinit();
+
+	var fpl = try flightplan.Format.Garmin.parseFromFile(alloc, "./test/basic.fpl");
+	defer fpl.deinit();
+
+	std.debug.print("route: \"{s}\" (points: {d})\n", .{
+		fpl.route.name.?,
+		fpl.route.points.items.len,
+	});
+	for (fpl.route.points.items) |point| {
+		std.debug.print("  {s}\n", .{point});
+	}
+}
+```
+
 ## Build
 
 To build libflightplan, you need to have the following installed:
