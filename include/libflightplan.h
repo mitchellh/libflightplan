@@ -4,10 +4,51 @@
 // A flightplan represents the primary flightplan data structure.
 typedef void flightplan;
 
+/*
+ * NAME fpl_new()
+ *
+ * DESCRIPTION
+ *
+ * Create a new empty flight plan.
+ */
 flightplan *fpl_new();
-flightplan *fpl_parse_garmin(char *);
+
+/*
+ * NAME fpl_free()
+ *
+ * DESCRIPTION
+ *
+ * Free resources associated with a flight plan. The flight plan can no longer
+ * be used after this is called. This must be called for any flight plan that
+ * is returned.
+ */
 void fpl_free(flightplan *);
+
+/*
+ * NAME fpl_created()
+ *
+ * DESCRIPTION
+ *
+ * Returns the timestamp when the flight plan was created.
+ *
+ * NOTE(mitchellh): This raw string is not what I want long term. I want to
+ * convert this to a UTC unix timestamp, so this function will probably change
+ * to a time_t result at some point.
+ */
 char *fpl_created(flightplan *);
+
+/**************************************************************************
+ * Import/Export
+ *************************************************************************/
+
+/*
+ * NAME fpl_parse_garmin()
+ *
+ * DESCRIPTION
+ *
+ * Parse a Garmin FPL file. This is also compatible with ForeFlight.
+ */
+flightplan *fpl_parse_garmin(char *);
 
 /**************************************************************************
  * Waypoints
