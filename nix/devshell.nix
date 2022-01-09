@@ -9,11 +9,11 @@
 
   nativeBuildInputs = [
     pkg-config
+    scdoc
+    zig
   ];
 
   buildInputs = [
     libxml2
-    scdoc
-    zig
   ];
 }
