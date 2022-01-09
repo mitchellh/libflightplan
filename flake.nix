@@ -28,6 +28,8 @@
         };
       in rec {
         devShell = pkgs.devShell;
+        packages.libflightplan = pkgs.libflightplan;
+        defaultPackage = packages.libflightplan;
       }
     );
 }

@@ -9,6 +9,7 @@
   #
 
   devShell = prev.callPackage ./devshell.nix { };
+  libflightplan = prev.callPackage ./package.nix { };
 
   # zig we want to be the latest nightly since 0.9.0 is not released yet.
   zig = zigpkgs.master.latest;

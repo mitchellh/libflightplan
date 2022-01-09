@@ -50,7 +50,7 @@ fn make(step: *std.build.Step) !void {
     {
         const command = try std.fmt.allocPrint(
             self.builder.allocator,
-            "rm {[path]s}/* && mkdir -p {[path]s}",
+            "rm -f {[path]s}/* && mkdir -p {[path]s}",
             .{ .path = self.out_path },
         );
         _ = try self.builder.exec(&[_][]const u8{ "sh", "-c", command });
