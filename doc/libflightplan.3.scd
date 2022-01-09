@@ -14,7 +14,18 @@ airport, etc.
 This library is available as a native C library as well as Zig. The man pages
 focus on the C API currently.
 
-# Example
+# API NOTES
+
+- fpl_cleanup(3) should be called when all users of the library are done.
+  This cleans up any global state associatd with the library.
+
+- The library may allocate global state on the heap to store error
+  information (accessible via fpl_last_error(3)).
+
+- The library is not threadsafe. Global error state is stored in thread local
+  variables.
+
+# EXAMPLE
 
 The example below shows how the C API can be used to parse a ForeFlight
 flight plan and read route information about it.
