@@ -9,7 +9,7 @@ const pkgs = struct {
     };
 };
 
-pub fn build(b: *Builder) void {
+pub fn build(b: *Builder) !void {
     const mode = b.standardReleaseOptions();
     const target = b.standardTargetOptions(.{});
 
@@ -35,7 +35,7 @@ pub fn build(b: *Builder) void {
     );
     b.getInstallStep().dependOn(&install_header.step);
 
-    // Defaults
+    // Defaults when you do `zig build`
     b.default_step.dependOn(&static_lib.step);
     b.default_step.dependOn(&dynamic_lib.step);
 
@@ -73,8 +73,36 @@ pub fn build(b: *Builder) void {
         const test_unit_step = b.step("test-unit", "Run unit tests only");
         test_unit_step.dependOn(&lib_tests.step);
     }
+
+    // pkg-config
+    {
+        const file = try std.fs.path.join(
+            b.allocator,
+            &[_][]const u8{ b.cache_root, "libflightplan.pc" },
+        );
+        const pkgconfig_file = try std.fs.cwd().createFile(file, .{});
+
+        const writer = pkgconfig_file.writer();
+        try writer.print(
+            \\prefix={s}
+            \\includedir=${{prefix}}/include
+            \\libdir=${{prefix}}/lib
+            \\
+            \\Name: libflightplan
+            \\URL: https://github.com/mitchellh/libflightplan
+            \\Description: Library for reading and writing aviation flight plans.
+            \\Version: 0.1.0
+            \\Cflags: -I${{includedir}}
+            \\Libs: -L${{libdir}} -lflightplan
+        , .{b.install_prefix});
+        defer pkgconfig_file.close();
+
+        b.installFile(file, "share/pkgconfig/libflightplan.pc");
+    }
 }
 
+/// The shared settings that we need to apply when building a library or
+/// executable using libflightplan.
 fn initNativeLibrary(
     lib: *std.build.LibExeObjStep,
     mode: std.builtin.Mode,
