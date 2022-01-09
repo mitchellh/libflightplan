@@ -2,6 +2,7 @@
 
 , pkg-config
 , libxml2
+, scdoc
 , zig
 }: mkShell rec {
   name = "libflightplan";
@@ -12,6 +13,7 @@
 
   buildInputs = [
     libxml2
+    scdoc
     zig
   ];
 }
