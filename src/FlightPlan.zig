@@ -24,6 +24,8 @@ waypoints: hash_map.StringHashMapUnmanaged(Waypoint) = .{},
 /// waypoints map.
 route: Route = .{},
 
+/// Clean up resources associated with the flight plan. This should
+/// always be called for any created flight plan when it is no longer in use.
 pub fn deinit(self: *Self) void {
     if (self.created) |v| {
         self.alloc.free(v);
@@ -42,4 +44,5 @@ pub fn deinit(self: *Self) void {
 
 test {
     _ = Waypoint;
+    _ = @import("binding.zig");
 }

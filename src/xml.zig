@@ -1,5 +1,7 @@
 pub const c = @cImport({
+    @cDefine("LIBXML_WRITER_ENABLED", {});
     @cInclude("libxml/xmlreader.h");
+    @cInclude("libxml/xmlwriter.h");
 });
 
 // free calls xmlFree

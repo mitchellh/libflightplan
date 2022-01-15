@@ -9,9 +9,12 @@ const c = @import("xml.zig").c;
 /// in this library. See the function doc comments for details on
 /// exactly which of these can be returnd.
 pub const Set = error{
+    OutOfMemory,
     ReadFailed,
+    WriteFailed,
     NodeExpected,
     InvalidElement,
+    RouteMissingWaypoint,
 };
 
 /// last error that occurred, this MIGHT be set if an error code is returned.
@@ -52,11 +55,21 @@ pub const Detail = union(enum) {
 
     /// XMLDetail when an XML-related error occurs for formats that use XML.
     pub const XMLDetail = struct {
-        ctx: c.xmlParserCtxtPtr,
+        pub const Context = union(enum) {
+            global: void,
+            parser: c.xmlParserCtxtPtr,
+            writer: c.xmlTextWriterPtr,
+        };
+
+        ctx: Context,
 
         /// Return the raw xmlError structure.
         pub fn err(self: *XMLDetail) ?*c.xmlError {
-            return c.xmlCtxtGetLastError(self.ctx);
+            return switch (self.ctx) {
+                .global => c.xmlGetLastError(),
+                .parser => |ptr| c.xmlCtxtGetLastError(ptr),
+                .writer => |ptr| c.xmlCtxtGetLastError(ptr),
+            };
         }
 
         pub fn message(self: *XMLDetail) [:0]const u8 {
@@ -65,7 +78,11 @@ pub const Detail = union(enum) {
         }
 
         pub fn deinit(self: XMLDetail) void {
-            c.xmlFreeParserCtxt(self.ctx);
+            switch (self.ctx) {
+                .global => {},
+                .parser => |ptr| c.xmlFreeParserCtxt(ptr),
+                .writer => |ptr| c.xmlFreeTextWriter(ptr),
+            }
         }
     };
 
@@ -128,6 +145,18 @@ pub fn setLastError(err: ?Self) void {
     }
 
     _lastError = err;
+}
+
+/// Set a new last error that was an XML error.
+pub fn setLastErrorXML(code: Set, ctx: Detail.XMLDetail.Context) Set {
+    // Can't nest it all due to: https://github.com/ziglang/zig/issues/6043
+    const detail = Detail{ .xml = .{ .ctx = ctx } };
+    setLastError(Self{
+        .code = code,
+        .detail = detail,
+    });
+
+    return code;
 }
 
 test "set last error" {
