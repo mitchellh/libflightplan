@@ -14,8 +14,12 @@ a whopping _one_ format, and is not widely used at the moment.
 
 | Name | Ext | Read | Write |
 | :--- | :---: | :---: | :---: |
-| ForeFlight | FPL | ✅ | ✅ |
-| Garmin | FPL | ✅ | ✅ |
+| ForeFlight | FPL | ✅ | ✅* |
+| Garmin | FPL | ✅ | ✅* |
+
+\*: The C API doesn't support creating flight plans from scratch or
+modifying existing flight plans. But you can read in one format and
+encode in another.
 
 ## Usage
 
