@@ -1,0 +1,3 @@
+[submodule "vendor/zig-libxml2"]
+	path = vendor/zig-libxml2
+	url = https://github.com/mitchellh/zig-libxml2.git
