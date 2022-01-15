@@ -4,13 +4,19 @@ const libxml2 = @import("vendor/zig-libxml2/libxml2.zig");
 
 const ScdocStep = @import("src-build/ScdocStep.zig");
 
-// Our package
+// Zig packages in use
 const pkgs = struct {
-    const flightplan = std.build.Pkg{
-        .name = "flightplan",
-        .path = .{ .path = "src/main.zig" },
-    };
+    const flightplan = pkg("src/main.zig");
 };
+
+/// pkg can be called to get the Pkg for this library. Downstream users
+/// can use this to add the package to the import paths.
+pub fn pkg(path: []const u8) std.build.Pkg {
+    return std.build.Pkg{
+        .name = "flightplan",
+        .path = .{ .path = path },
+    };
+}
 
 pub fn build(b: *Builder) !void {
     const mode = b.standardReleaseOptions();
@@ -42,7 +48,7 @@ pub fn build(b: *Builder) !void {
 
     // Native Zig tests
     const lib_tests = b.addTestSource(pkgs.flightplan.path);
-    initNativeLibrary(lib_tests, mode, target);
+    addSharedSettings(lib_tests, mode, target);
     xml2.link(lib_tests);
     test_unit_step.dependOn(&lib_tests.step);
     test_step.dependOn(&lib_tests.step);
@@ -50,7 +56,7 @@ pub fn build(b: *Builder) !void {
     // Static C lib
     {
         const static_lib = b.addStaticLibrary("flightplan", "src/binding.zig");
-        initNativeLibrary(static_lib, mode, target);
+        addSharedSettings(static_lib, mode, target);
         xml2.addIncludeDirs(static_lib);
         static_lib.install();
         b.default_step.dependOn(&static_lib.step);
@@ -78,7 +84,7 @@ pub fn build(b: *Builder) !void {
             "flightplan";
 
         const dynamic_lib = b.addSharedLibrary(dynamic_lib_name, "src/binding.zig", .unversioned);
-        initNativeLibrary(dynamic_lib, mode, target);
+        addSharedSettings(dynamic_lib, mode, target);
         dynamic_lib.linkSystemLibrary("libxml-2.0");
         dynamic_lib.install();
         b.default_step.dependOn(&dynamic_lib.step);
@@ -137,7 +143,7 @@ pub fn build(b: *Builder) !void {
 
 /// The shared settings that we need to apply when building a library or
 /// executable using libflightplan.
-fn initNativeLibrary(
+fn addSharedSettings(
     lib: *std.build.LibExeObjStep,
     mode: std.builtin.Mode,
     target: std.zig.CrossTarget,
