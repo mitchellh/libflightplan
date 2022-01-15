@@ -63,4 +63,4 @@ jobs:
     # Run our go tests within the context of the dev shell from the flake. This
     # will ensure we have all our dependencies.
     - name: test
-      run: nix develop -c zig build test
+      run: nix develop -c zig build test-unit
