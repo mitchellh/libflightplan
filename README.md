@@ -19,7 +19,7 @@ a whopping _one_ format, and is not widely used at the moment.
 
 \*: The C API doesn't support creating flight plans from scratch or
 modifying existing flight plans. But you can read in one format and
-encode in another.
+encode in another. The Zig API supports full creation and modification.
 
 ## Usage
 
