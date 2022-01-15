@@ -8,7 +8,12 @@ compatible shared and static library so that any programming language that
 can interface with C can interface with this library.
 
 **Library status: Unstable.** This library is _brand new_, supports
-a whopping _one_ format, and is not widely used at the moment.
+a whopping _one_ format, and is not widely used at the moment. A lot of the
+field formats are just text right now, which won't work for converting formats
+(i.e. latitude/longitude). There are missing fields for other formats such
+as flight type (VFR vs IFR), IFR procedures, etc. By focusing on ForeFlight,
+I initially support only a bare minimum set of fields. I'm interested in
+adding more one day, but this will require some structural breaking changes.
 
 ## Formats
 
