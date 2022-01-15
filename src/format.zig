@@ -1,4 +1,5 @@
 const std = @import("std");
+const fs = std.fs;
 const mem = std.mem;
 const testing = std.testing;
 const Allocator = std.mem.Allocator;
@@ -32,6 +33,20 @@ pub fn Format(
         /// to implement std.io.writer.
         pub fn writeTo(writer: anytype, fpl: *const FlightPlan) !void {
             return Impl.Writer.writeTo(writer, fpl);
+        }
+
+        /// Write the flightplan to the given filepath.
+        pub fn writeToFile(path: [:0]const u8, fpl: *const FlightPlan) !void {
+            // Create our file
+            const flags = fs.File.CreateFlags{ .truncate = true };
+            const file = if (fs.path.isAbsolute(path))
+                try fs.createFileAbsolute(path, flags)
+            else
+                try fs.cwd().createFile(path, flags);
+            defer file.close();
+
+            // Write as a writer
+            try writeTo(file.writer(), fpl);
         }
     };
 }

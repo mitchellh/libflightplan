@@ -46,9 +46,15 @@ pub const Binding = struct {
     const binding = @import("../binding.zig");
     const c_allocator = std.heap.c_allocator;
 
-    export fn fpl_parse_garmin(path: [*:0]const u8) ?*binding.c.flightplan {
+    export fn fpl_garmin_parse_file(path: [*:0]const u8) ?*binding.c.flightplan {
         var fpl = Reader.initFromFile(c_allocator, mem.sliceTo(path, 0)) catch return null;
         return binding.cflightplan(fpl);
+    }
+
+    export fn fpl_garmin_write_to_file(raw: ?*binding.c.flightplan, path: [*:0]const u8) c_int {
+        const fpl = binding.flightplan(raw) orelse return -1;
+        Format.writeToFile(mem.sliceTo(path, 0), fpl) catch return -1;
+        return 0;
     }
 };
 

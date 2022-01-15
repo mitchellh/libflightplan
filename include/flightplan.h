@@ -86,13 +86,22 @@ char *fpl_error_message(flightplan_error *);
  *************************************************************************/
 
 /*
- * NAME fpl_parse_garmin()
+ * NAME fpl_garmin_parse_file()
  *
  * DESCRIPTION
  *
  * Parse a Garmin FPL file. This is also compatible with ForeFlight.
  */
-flightplan *fpl_parse_garmin(char *);
+flightplan *fpl_garmin_parse_file(char *);
+
+/*
+ * NAME fpl_garmin_write_to_file()
+ *
+ * DESCRIPTION
+ *
+ * Write a flight plan in Garmin FPL format to the given file.
+ */
+int fpl_garmin_write_to_file(flightplan *, char *);
 
 /**************************************************************************
  * Waypoints

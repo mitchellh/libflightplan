@@ -4,7 +4,7 @@
 
 int main() {
     // Parse our flight plan from an FPL file out of ForeFlight.
-    flightplan *fpl = fpl_parse_garmin("./test/basic.fpl");
+    flightplan *fpl = fpl_garmin_parse_file("./test/basic.fpl");
     if (fpl == NULL) {
         return 1;
     }

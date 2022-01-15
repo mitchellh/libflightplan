@@ -42,7 +42,7 @@ and integrated with other build systems.
 
 int main() {
 	// Parse our flight plan from an FPL file out of ForeFlight.
-	flightplan *fpl = fpl_parse_garmin("./test/basic.fpl");
+	flightplan *fpl = fpl_garmin_parse_file("./test/basic.fpl");
 	if (fpl == NULL) {
 		// We can get a more detailed error.
 		flightplan_error *err = fpl_last_error();
@@ -58,6 +58,9 @@ int main() {
 		flightplan_route_point *point = fpl_route_points_get(fpl, i);
 		printf("  %s\n", fpl_route_point_identifier(point));
 	}
+
+	// Write to a file
+	fpl_garmin_write_to_file(fpl, "./copy.fpl");
 
 	fpl_free(fpl);
 	fpl_cleanup();
@@ -87,6 +90,8 @@ fn main() void {
 	for (fpl.route.points.items) |point| {
 		std.debug.print("  {s}\n", .{point});
 	}
+
+	flightplan.Format.Garmin.Format.writeToFile("./copy.fpl", fpl);
 }
 ```
 
