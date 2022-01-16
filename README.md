@@ -73,8 +73,8 @@ int main() {
 		printf("  %s\n", fpl_route_point_identifier(point));
 	}
 
-	// Write to a file
-	fpl_garmin_write_to_file(fpl, "./copy.fpl");
+	// Convert this to an X-Plane 11 flight plan.
+	fpl_xplane11_write_to_file(fpl, "./copy.fms");
 
 	fpl_free(fpl);
 	fpl_cleanup();
@@ -88,11 +88,11 @@ int main() {
 const std = @import("std");
 const flightplan = @import("flightplan");
 
-fn main() void {
+fn main() !void {
 	defer flightplan.deinit();
 
-	var arena = std.heap.ArenaAllocator.init(std.heap.page_allocator);
-	defer arena.deinit();
+	var alloc = std.heap.ArenaAllocator.init(std.heap.page_allocator);
+	defer alloc.deinit();
 
 	var fpl = try flightplan.Format.Garmin.initFromFile(alloc, "./test/basic.fpl");
 	defer fpl.deinit();
@@ -105,7 +105,8 @@ fn main() void {
 		std.debug.print("  {s}\n", .{point});
 	}
 
-	flightplan.Format.Garmin.Format.writeToFile("./copy.fpl", fpl);
+	// Convert to an X-Plane 11 flight plan format
+	flightplan.Format.XPlaneFMS11.Format.writeToFile("./copy.fms", fpl);
 }
 ```
 
