@@ -182,7 +182,9 @@ pub const Reader = struct {
                 const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
                 defer xml.free(copy);
                 const zcopy = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
-                try self.points.append(alloc, zcopy);
+                try self.points.append(alloc, Route.Point{
+                    .identifier = zcopy,
+                });
             }
         }
     }
@@ -416,7 +418,7 @@ pub const Writer = struct {
 
         for (fpl.route.points.items) |point| {
             // Find the waypoint for this point
-            const wp = fpl.waypoints.get(point) orelse return ErrorSet.RouteMissingWaypoint;
+            const wp = fpl.waypoints.get(point.identifier) orelse return ErrorSet.RouteMissingWaypoint;
 
             // Start <route-point>
             rc = c.xmlTextWriterStartElement(xmlwriter, "route-point");
@@ -424,7 +426,7 @@ pub const Writer = struct {
                 return Error.setLastErrorXML(ErrorSet.WriteFailed, .{ .writer = xmlwriter });
             }
 
-            rc = c.xmlTextWriterWriteElement(xmlwriter, "waypoint-identifier", point);
+            rc = c.xmlTextWriterWriteElement(xmlwriter, "waypoint-identifier", point.identifier);
             if (rc < 0) {
                 return Error.setLastErrorXML(ErrorSet.WriteFailed, .{ .writer = xmlwriter });
             }

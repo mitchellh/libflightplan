@@ -177,13 +177,17 @@ export fn fpl_route_points_count(raw: ?*c.flightplan) c_int {
 
 export fn fpl_route_points_get(raw: ?*c.flightplan, idx: c_int) ?*c.flightplan_route_point {
     const fpl = flightplan(raw) orelse return null;
-    const val = fpl.route.points.items[@intCast(usize, idx)];
+    const val = &fpl.route.points.items[@intCast(usize, idx)];
 
     // have to use intToPtr to avoid const qualifier discard
-    return @intToPtr(*c.flightplan_route_point, @ptrToInt(val.ptr));
+    return @intToPtr(*c.flightplan_route_point, @ptrToInt(val));
 }
 
 export fn fpl_route_point_identifier(raw: ?*c.flightplan_route_point) ?[*:0]const u8 {
-    const ptr = raw orelse return null;
-    return @ptrCast(?[*:0]const u8, ptr);
+    const ptr = routePoint(raw) orelse return null;
+    return ptr.identifier;
+}
+
+pub fn routePoint(raw: ?*c.flightplan_route_point) ?*Route.Point {
+    return @ptrCast(?*Route.Point, @alignCast(@alignOf(?*Route.Point), raw));
 }
