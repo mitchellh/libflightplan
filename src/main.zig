@@ -3,6 +3,8 @@ const std = @import("std");
 pub const FlightPlan = @import("FlightPlan.zig");
 pub const Waypoint = @import("Waypoint.zig");
 pub const Route = @import("Route.zig");
+pub const Departure = @import("Departure.zig");
+pub const Runway = @import("Runway.zig");
 pub const Error = @import("Error.zig");
 pub const Format = struct {
     pub const Garmin = @import("format/garmin.zig");
@@ -17,6 +19,9 @@ pub fn deinit() void {
 
 test {
     _ = Error;
+    _ = Departure;
     _ = FlightPlan;
+    _ = Route;
+    _ = Runway;
     _ = Format.Garmin;
 }
