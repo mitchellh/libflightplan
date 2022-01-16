@@ -90,6 +90,42 @@ pub const Reader = struct {
         return initFromXMLNode(alloc, root);
     }
 
+    pub fn initFromReader(alloc: Allocator, reader: anytype) !FlightPlan {
+        // Read the full contents.
+        var buf = try reader.readAllAlloc(
+            alloc,
+            1024 * 1024 * 50, // 50 MB for now
+        );
+        defer alloc.free(buf);
+
+        const ctx = c.xmlNewParserCtxt();
+        if (ctx == null) {
+            Error.setLastError(null);
+            return ErrorSet.ReadFailed;
+        }
+        // NOTE: we do not defer freeing the context cause we want to preserve
+        // the context if there are any errors.
+
+        // Read the
+        const doc = c.xmlCtxtReadMemory(
+            ctx,
+            buf.ptr,
+            @intCast(c_int, buf.len),
+            null,
+            null,
+            0,
+        );
+        if (doc == null) {
+            return Error.setLastErrorXML(ErrorSet.ReadFailed, .{ .parser = ctx });
+        }
+        defer c.xmlFreeParserCtxt(ctx);
+        defer c.xmlFreeDoc(doc);
+
+        // Get the root elem
+        const root = c.xmlDocGetRootElement(doc);
+        return initFromXMLNode(alloc, root);
+    }
+
     fn initFromXMLNode(alloc: Allocator, node: *c.xmlNode) !FlightPlan {
         // Should be an opening node
         if (node.type != c.XML_ELEMENT_NODE) {
@@ -477,6 +513,9 @@ pub const Writer = struct {
         // Debug, write output to compare
         //std.debug.print("write:\n\n{s}\n", .{output.items});
 
-        // TODO: re-read to verify it parses
+        // re-read to verify it parses
+        const reader = std.io.fixedBufferStream(output.items).reader();
+        var plan2 = try Reader.initFromReader(testing.allocator, reader);
+        defer plan2.deinit();
     }
 };
