@@ -27,6 +27,7 @@ pub const c = @cImport({
 // Formats
 
 pub usingnamespace @import("format/garmin.zig").Binding;
+pub usingnamespace @import("format/xplane_fms_11.zig").Binding;
 
 //-------------------------------------------------------------------
 // General functions

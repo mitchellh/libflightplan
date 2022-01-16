@@ -10,10 +10,12 @@ const c = @import("xml.zig").c;
 /// exactly which of these can be returnd.
 pub const Set = error{
     OutOfMemory,
+    Unimplemented,
     ReadFailed,
     WriteFailed,
     NodeExpected,
     InvalidElement,
+    RequiredValueMissing,
     RouteMissingWaypoint,
 };
 

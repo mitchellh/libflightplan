@@ -21,6 +21,7 @@ adding more one day, but this will require some structural breaking changes.
 | :--- | :---: | :---: | :---: |
 | ForeFlight | FPL | ✅ | ✅* |
 | Garmin | FPL | ✅ | ✅* |
+| X-Plane FMS 11 | FMS | ❌ | ✅* |
 
 \*: The C API doesn't support creating flight plans from scratch or
 modifying existing flight plans. But you can read in one format and

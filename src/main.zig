@@ -9,6 +9,7 @@ pub const Runway = @import("Runway.zig");
 pub const Error = @import("Error.zig");
 pub const Format = struct {
     pub const Garmin = @import("format/garmin.zig");
+    pub const XPlaneFMS11 = @import("format/xplane_fms_11.zig");
 };
 
 /// deinit should be called when the process is done with this library
@@ -26,4 +27,5 @@ test {
     _ = Route;
     _ = Runway;
     _ = Format.Garmin;
+    _ = Format.XPlaneFMS11;
 }

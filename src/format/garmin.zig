@@ -2,7 +2,15 @@
 /// format. This format is also used by ForeFlight with slight modifications.
 /// The reader/writer handle both formats.
 ///
+/// The FPL format does not support departure/arrival procedures. The
+/// data it uses is:
+///
+///   * Waypoints
+///   * Route: only the identifier for each point
+///
 /// Reference: https://www8.garmin.com/xmlschemas/FlightPlanv1.xsd
+const Garmin = @This();
+
 const std = @import("std");
 const mem = std.mem;
 const testing = std.testing;
@@ -17,8 +25,6 @@ const c = xml.c;
 const Error = @import("../Error.zig");
 const ErrorSet = Error.Set;
 const Route = @import("../Route.zig");
-
-const Garmin = @This();
 
 test {
     _ = Binding;
@@ -274,9 +280,6 @@ pub const Reader = struct {
 /// Writer implementation (see format.zig)
 pub const Writer = struct {
     pub fn writeTo(writer: anytype, fpl: *const FlightPlan) !void {
-        _ = writer;
-        _ = fpl;
-
         // Initialize an in-memory buffer. We have to do all writes to a buffer
         // first. We know that our flight plans can't be _that_ big (for a
         // reasonable user) so this is fine.
