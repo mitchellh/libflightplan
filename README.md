@@ -7,6 +7,11 @@ airport, etc. This library is written primarily in Zig but exports a C ABI
 compatible shared and static library so that any programming language that
 can interface with C can interface with this library.
 
+**Warning!** If you use this library with the intention of using the
+flight plan for actual flight, be very careful to verify the plan in
+your avionics or EFB. Never trust the output of this library for actual
+flight.
+
 **Library status: Unstable.** This library is _brand new_, supports
 a whopping _one_ format, and is not widely used at the moment. A lot of the
 field formats are just text right now, which won't work for converting formats
