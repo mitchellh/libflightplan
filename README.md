@@ -12,13 +12,11 @@ flight plan for actual flight, be very careful to verify the plan in
 your avionics or EFB. Never trust the output of this library for actual
 flight.
 
-**Library status: Unstable.** This library is _brand new_, supports
-a whopping _one_ format, and is not widely used at the moment. A lot of the
-field formats are just text right now, which won't work for converting formats
-(i.e. latitude/longitude). There are missing fields for other formats such
-as flight type (VFR vs IFR), IFR procedures, etc. By focusing on ForeFlight,
-I initially support only a bare minimum set of fields. I'm interested in
-adding more one day, but this will require some structural breaking changes.
+**Library status: Unstable.** This library is _brand new_ and was built for
+hobby purposes. It only supports a handful of formats, with limitations.
+My primary interest at the time of writing this is ForeFlight flight plans
+and being able to use them to build supporting tools, but I'm interested
+in supporting more formats over time.
 
 ## Formats
 
