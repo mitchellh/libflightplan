@@ -15,8 +15,8 @@ type: Type,
 
 /// Latitude and longitude of this waypoint. This is in a string format
 /// so we don't have to parse arbitrary decimals.
-lat: [:0]const u8,
-lon: [:0]const u8,
+lat: f32 = 0,
+lon: f32 = 0,
 
 pub const Type = enum {
     user_waypoint,
@@ -40,7 +40,6 @@ pub const Type = enum {
         } else if (mem.eql(u8, v, "INT-VRP")) {
             return .int_vrp;
         }
-
         @panic("invalid waypoint type");
     }
 
@@ -58,7 +57,5 @@ pub const Type = enum {
 
 pub fn deinit(self: *Self, alloc: Allocator) void {
     alloc.free(self.identifier);
-    alloc.free(self.lat);
-    alloc.free(self.lon);
     self.* = undefined;
 }

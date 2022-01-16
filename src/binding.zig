@@ -132,14 +132,14 @@ export fn fpl_waypoint_identifier(raw: ?*c.flightplan_waypoint) ?[*:0]const u8 {
     return wp.identifier.ptr;
 }
 
-export fn fpl_waypoint_lat(raw: ?*c.flightplan_waypoint) ?[*:0]const u8 {
-    const wp = waypoint(raw) orelse return null;
-    return wp.lat.ptr;
+export fn fpl_waypoint_lat(raw: ?*c.flightplan_waypoint) f32 {
+    const wp = waypoint(raw) orelse return -1;
+    return wp.lat;
 }
 
-export fn fpl_waypoint_lon(raw: ?*c.flightplan_waypoint) ?[*:0]const u8 {
-    const wp = waypoint(raw) orelse return null;
-    return wp.lon.ptr;
+export fn fpl_waypoint_lon(raw: ?*c.flightplan_waypoint) f32 {
+    const wp = waypoint(raw) orelse return -1;
+    return wp.lon;
 }
 
 export fn fpl_waypoint_type(raw: ?*c.flightplan_waypoint) c.flightplan_waypoint_type {

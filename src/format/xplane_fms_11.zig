@@ -218,7 +218,7 @@ pub const Writer = struct {
                 .airway => |v| v,
             };
 
-            try writer.print("{d} {s} {s} {d} {s} {s}\n", .{
+            try writer.print("{d} {s} {s} {d} {d} {d}\n", .{
                 typeCode,
                 wp.identifier,
                 viaString,
@@ -244,7 +244,7 @@ pub const Writer = struct {
         try Writer.writeTo(output.writer(), &plan);
 
         // Debug, write output to compare
-        std.debug.print("write:\n\n{s}\n", .{output.items});
+        // std.debug.print("write:\n\n{s}\n", .{output.items});
 
         // TODO: re-read to verify it parses
     }

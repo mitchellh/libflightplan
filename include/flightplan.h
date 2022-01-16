@@ -191,22 +191,18 @@ char *fpl_waypoint_identifier(flightplan_waypoint *);
  *
  * DESCRIPTION
  *
- * Return the latitude for this waypoint. This returns the raw value from
- * the flight plan file, so this isn't guaranteed to be any specific precision.
- * Validation of the value on read/write is dependent on the format in use.
+ * Return the latitude for this waypoint as a decimal value.
  */
-char *fpl_waypoint_lat(flightplan_waypoint *);
+float fpl_waypoint_lat(flightplan_waypoint *);
 
 /*
  * NAME fpl_waypoint_lon()
  *
  * DESCRIPTION
  *
- * Return the longitude for this waypoint. This returns the raw value from
- * the flight plan file, so this isn't guaranteed to be any specific precision.
- * Validation of the value on read/write is dependent on the format in use.
+ * Return the longitude for this waypoint as a decimal value.
  */
-char *fpl_waypoint_lon(flightplan_waypoint *);
+float fpl_waypoint_lon(flightplan_waypoint *);
 
 /*
  * NAME fpl_waypoint_type()

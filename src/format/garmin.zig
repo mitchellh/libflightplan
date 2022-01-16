@@ -199,8 +199,6 @@ pub const Reader = struct {
         var self = Waypoint{
             .identifier = undefined,
             .type = undefined,
-            .lat = undefined,
-            .lon = undefined,
         };
 
         var cur: ?*c.xmlNode = node.children;
@@ -216,11 +214,11 @@ pub const Reader = struct {
             } else if (c.xmlStrcmp(n.name, "lat") == 0) {
                 const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
                 defer xml.free(copy);
-                self.lat = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
+                self.lat = try std.fmt.parseFloat(f32, mem.sliceTo(copy, 0));
             } else if (c.xmlStrcmp(n.name, "lon") == 0) {
                 const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
                 defer xml.free(copy);
-                self.lon = try Allocator.dupeZ(alloc, u8, mem.sliceTo(copy, 0));
+                self.lon = try std.fmt.parseFloat(f32, mem.sliceTo(copy, 0));
             } else if (c.xmlStrcmp(n.name, "type") == 0) {
                 const copy = c.xmlNodeListGetString(node.doc, n.children, 1);
                 defer xml.free(copy);
@@ -247,8 +245,8 @@ pub const Reader = struct {
         {
             const wp = plan.waypoints.get("KHHR").?;
             try testing.expectEqualStrings(wp.identifier, "KHHR");
-            try testing.expectEqualStrings(wp.lat, "33.92286102713828");
-            try testing.expectEqualStrings(wp.lon, "-118.3350830946681");
+            try testing.expect(wp.lat > 33.91 and wp.lat < 33.93);
+            try testing.expect(wp.lon > -118.336 and wp.lon < -118.334);
             try testing.expectEqual(wp.type, .airport);
             try testing.expectEqualStrings(wp.type.toString(), "AIRPORT");
         }
@@ -356,6 +354,9 @@ pub const Writer = struct {
             return;
         }
 
+        // Buffer for writing
+        var buf: [128]u8 = undefined;
+
         // Start <waypoint-table>
         var rc = c.xmlTextWriterStartElement(xmlwriter, "waypoint-table");
         if (rc < 0) {
@@ -381,12 +382,20 @@ pub const Writer = struct {
                 return Error.setLastErrorXML(ErrorSet.WriteFailed, .{ .writer = xmlwriter });
             }
 
-            rc = c.xmlTextWriterWriteElement(xmlwriter, "lat", wp.lat);
+            rc = c.xmlTextWriterWriteElement(
+                xmlwriter,
+                "lat",
+                try std.fmt.bufPrintZ(&buf, "{d}", .{wp.lat}),
+            );
             if (rc < 0) {
                 return Error.setLastErrorXML(ErrorSet.WriteFailed, .{ .writer = xmlwriter });
             }
 
-            rc = c.xmlTextWriterWriteElement(xmlwriter, "lon", wp.lon);
+            rc = c.xmlTextWriterWriteElement(
+                xmlwriter,
+                "lon",
+                try std.fmt.bufPrintZ(&buf, "{d}", .{wp.lon}),
+            );
             if (rc < 0) {
                 return Error.setLastErrorXML(ErrorSet.WriteFailed, .{ .writer = xmlwriter });
             }

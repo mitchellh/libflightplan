@@ -21,7 +21,7 @@ int main() {
             break;
         }
 
-        printf("  %s\t(type: %s,\tlat/lon: %s/%s)\n",
+        printf("  %s\t(type: %s,\tlat/lon: %f/%f)\n",
                 fpl_waypoint_identifier(wp),
                 fpl_waypoint_type_str(fpl_waypoint_type(wp)),
                 fpl_waypoint_lat(wp),
