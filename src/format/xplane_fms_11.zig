@@ -28,7 +28,16 @@ test {
 pub const Format = format.Format(FMS);
 
 /// Binding are the C bindings for this format.
-pub const Binding = struct {};
+pub const Binding = struct {
+    const binding = @import("../binding.zig");
+    const c_allocator = std.heap.c_allocator;
+
+    export fn fpl_xplane11_write_to_file(raw: ?*binding.c.flightplan, path: [*:0]const u8) c_int {
+        const fpl = binding.flightplan(raw) orelse return -1;
+        Format.writeToFile(mem.sliceTo(path, 0), fpl) catch return -1;
+        return 0;
+    }
+};
 
 /// Reader implementation (see format.zig)
 /// TODO

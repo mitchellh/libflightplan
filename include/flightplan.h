@@ -103,6 +103,15 @@ flightplan *fpl_garmin_parse_file(char *);
  */
 int fpl_garmin_write_to_file(flightplan *, char *);
 
+/*
+ * NAME fpl_xplane11_write_to_file()
+ *
+ * DESCRIPTION
+ *
+ * Write a flight plan in X-Plane 11 FMS format to the given file.
+ */
+int fpl_xplane11_write_to_file(flightplan *, char *);
+
 /**************************************************************************
  * Waypoints
  *************************************************************************/
