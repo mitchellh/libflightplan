@@ -10,7 +10,9 @@ const testing = std.testing;
 const Allocator = std.mem.Allocator;
 
 const format = @import("../format.zig");
+const testutil = @import("../test.zig");
 const FlightPlan = @import("../FlightPlan.zig");
+const Route = @import("../Route.zig");
 const Waypoint = @import("../Waypoint.zig");
 const Error = @import("../Error.zig");
 const ErrorSet = Error.Set;
@@ -44,7 +46,7 @@ pub const Writer = struct {
         // Header
         try writer.writeAll("I\n");
         try writer.writeAll("1100 Version\n");
-        try writer.print("CYCLE {s}\n", .{fpl.airarc orelse
+        try writer.print("CYCLE {s}\n", .{fpl.airac orelse
             return ErrorSet.RequiredValueMissing});
 
         // Departure
@@ -108,7 +110,7 @@ pub const Writer = struct {
 
         if (dep.sid) |v| {
             try writer.print("SID {s}\n", .{v});
-            if (dep.sid_transition) |transition|
+            if (dep.transition) |transition|
                 try writer.print("SIDTRANS {s}\n", .{transition});
         }
     }
@@ -154,7 +156,7 @@ pub const Writer = struct {
         for (fpl.route.points.items) |point, i| {
             const wp = fpl.waypoints.get(point.identifier) orelse return ErrorSet.RouteMissingWaypoint;
 
-            const typeCode = switch (wp.type) {
+            const typeCode: u8 = switch (wp.type) {
                 .airport => 1,
                 .ndb => 2,
                 .vor => 3,
@@ -168,13 +170,13 @@ pub const Writer = struct {
             const via = point.via orelse blk: {
                 if (i == 0 and wp.type == .airport) {
                     // First route, airport => departure airport
-                    break :blk .{ .airport_departure = {} };
+                    break :blk Route.Point.Via{ .airport_departure = {} };
                 } else if (i == fpl.route.points.items.len - 1 and wp.type == .airport) {
                     // Last route, airport => destination airport
-                    break :blk .{ .airport_destination = {} };
+                    break :blk Route.Point.Via{ .airport_destination = {} };
                 } else {
                     // Anything else, we go direct
-                    break :blk .{ .direct = {} };
+                    break :blk Route.Point.Via{ .direct = {} };
                 }
             };
 
@@ -195,5 +197,28 @@ pub const Writer = struct {
                 wp.lon,
             });
         }
+    }
+
+    test "read Garmin FPL, write X-Plane" {
+        const Garmin = @import("garmin.zig");
+
+        const testPath = try testutil.testFile("basic.fpl");
+        var plan = try Garmin.Format.initFromFile(testing.allocator, testPath);
+        defer plan.deinit();
+
+        // Fill in our required fields
+        plan.airac = try Allocator.dupeZ(testing.allocator, u8, "2201");
+
+        // Write the plan and compare
+        var output = std.ArrayList(u8).init(testing.allocator);
+        defer output.deinit();
+
+        // Write
+        try Writer.writeTo(output.writer(), &plan);
+
+        // Debug, write output to compare
+        // std.debug.print("write:\n\n{s}\n", .{output.items});
+
+        // TODO: re-read to verify it parses
     }
 };
