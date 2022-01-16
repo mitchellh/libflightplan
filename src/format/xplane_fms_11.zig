@@ -11,6 +11,7 @@ const Allocator = std.mem.Allocator;
 
 const format = @import("../format.zig");
 const testutil = @import("../test.zig");
+const time = @import("../time.zig");
 const FlightPlan = @import("../FlightPlan.zig");
 const Route = @import("../Route.zig");
 const Waypoint = @import("../Waypoint.zig");
@@ -52,11 +53,31 @@ pub const Reader = struct {
 /// Writer implementation (see format.zig)
 pub const Writer = struct {
     pub fn writeTo(writer: anytype, fpl: *const FlightPlan) !void {
+        // Buffer that might be used for string operations.
+        // Ensure this is always big enough.
+        var buf: [8]u8 = undefined;
+
         // Header
         try writer.writeAll("I\n");
         try writer.writeAll("1100 Version\n");
-        try writer.print("CYCLE {s}\n", .{fpl.airac orelse
-            return ErrorSet.RequiredValueMissing});
+
+        // Determine our AIRAC cycle. We try to use the airac cycle
+        // on the flight plan. If that's not set, we just make
+        // one up based on the current year. Waypoints don't change
+        // often and flightplan validation will find this error so
+        // if the user got here they are okay with defaults.
+        if (fpl.airac) |v| {
+            try writer.print("CYCLE {s}\n", .{v});
+        } else {
+            const t = time.c.time(null);
+            const tm = time.c.localtime(&t).*;
+            const v = try std.fmt.bufPrintZ(&buf, "{d}01", .{
+                // we want years since 2000
+                tm.tm_year - 100,
+            });
+
+            try writer.print("CYCLE {s}\n", .{v});
+        }
 
         // Departure
         if (fpl.departure) |dep| {
@@ -215,9 +236,6 @@ pub const Writer = struct {
         var plan = try Garmin.Format.initFromFile(testing.allocator, testPath);
         defer plan.deinit();
 
-        // Fill in our required fields
-        plan.airac = try Allocator.dupeZ(testing.allocator, u8, "2201");
-
         // Write the plan and compare
         var output = std.ArrayList(u8).init(testing.allocator);
         defer output.deinit();
@@ -226,7 +244,7 @@ pub const Writer = struct {
         try Writer.writeTo(output.writer(), &plan);
 
         // Debug, write output to compare
-        // std.debug.print("write:\n\n{s}\n", .{output.items});
+        std.debug.print("write:\n\n{s}\n", .{output.items});
 
         // TODO: re-read to verify it parses
     }
