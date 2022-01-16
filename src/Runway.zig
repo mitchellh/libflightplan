@@ -25,7 +25,7 @@ pub fn toString(self: Self, buf: []u8) ![:0]u8 {
         posString = @tagName(pos);
     }
 
-    return try std.fmt.bufPrintZ(buf, "{d}{s}", .{ self.number, posString });
+    return try std.fmt.bufPrintZ(buf, "{d:0>2}{s}", .{ self.number, posString });
 }
 
 test "string" {
@@ -43,7 +43,7 @@ test "string" {
 
     {
         const rwy = Self{ .number = 1, .position = .C };
-        try testing.expectEqualStrings(try rwy.toString(&buf), "1C");
+        try testing.expectEqualStrings(try rwy.toString(&buf), "01C");
     }
 
     // Stupid but should work
