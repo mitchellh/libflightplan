@@ -13,8 +13,7 @@ identifier: [:0]const u8,
 /// Type of the waypoint, such as VOR, NDB, etc.
 type: Type,
 
-/// Latitude and longitude of this waypoint. This is in a string format
-/// so we don't have to parse arbitrary decimals.
+/// Latitude and longitude of this waypoint.
 lat: f32 = 0,
 lon: f32 = 0,
 
