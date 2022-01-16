@@ -13,6 +13,7 @@ const Allocator = std.mem.Allocator;
 
 const Waypoint = @import("Waypoint.zig");
 const Departure = @import("Departure.zig");
+const Destination = @import("Destination.zig");
 const Route = @import("Route.zig");
 
 /// Allocator associated with this FlightPlan. This allocator must be
@@ -35,6 +36,9 @@ created: ?[:0]const u8 = null,
 /// Departure information
 departure: ?Departure = null,
 
+/// Destination information
+destination: ?Destination = null,
+
 /// Waypoints that are part of the route. These are unordered, they are
 /// just the full list of possible waypoints that the route may contain.
 waypoints: hash_map.StringHashMapUnmanaged(Waypoint) = .{},
@@ -55,6 +59,7 @@ pub fn deinit(self: *Self) void {
     if (self.airac) |v| self.alloc.free(v);
     if (self.created) |v| self.alloc.free(v);
     if (self.departure) |*dep| dep.deinit(self.alloc);
+    if (self.destination) |*des| des.deinit(self.alloc);
 
     self.route.deinit(self.alloc);
 
