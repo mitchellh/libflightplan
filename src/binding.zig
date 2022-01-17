@@ -17,9 +17,7 @@ const Waypoint = lib.Waypoint;
 const Route = lib.Route;
 const testutil = @import("test.zig");
 
-/// The C headers for our binding. This is public so that formats can
-/// import this and use these for types.
-pub const c = @cImport({
+const c = @cImport({
     @cInclude("flightplan.h");
 });
 
@@ -36,21 +34,19 @@ export fn fpl_cleanup() void {
     lib.deinit();
 }
 
-export fn fpl_new() ?*c.flightplan {
-    const result = c_allocator.create(FlightPlan) catch return null;
-    result.* = FlightPlan{ .alloc = c_allocator };
-    return @ptrCast(?*c.flightplan, result);
+export fn fpl_new() ?*FlightPlan {
+    return cflightplan(.{ .alloc = c_allocator });
 }
 
-export fn fpl_set_created(raw: ?*c.flightplan, str: [*:0]const u8) u8 {
-    const fpl = flightplan(raw) orelse return 1;
+export fn fpl_set_created(raw: ?*FlightPlan, str: [*:0]const u8) u8 {
+    const fpl = raw orelse return 1;
     const copy = std.mem.span(str);
     fpl.created = Allocator.dupeZ(c_allocator, u8, copy) catch return 1;
     return 0;
 }
 
-export fn fpl_created(raw: ?*c.flightplan) ?[*:0]const u8 {
-    if (flightplan(raw)) |fpl| {
+export fn fpl_created(raw: ?*FlightPlan) ?[*:0]const u8 {
+    if (raw) |fpl| {
         if (fpl.created) |v| {
             return v.ptr;
         }
@@ -59,38 +55,29 @@ export fn fpl_created(raw: ?*c.flightplan) ?[*:0]const u8 {
     return null;
 }
 
-export fn fpl_free(raw: ?*c.flightplan) void {
-    if (flightplan(raw)) |v| {
+export fn fpl_free(raw: ?*FlightPlan) void {
+    if (raw) |v| {
         v.deinit();
         c_allocator.destroy(v);
     }
 }
 
-pub fn flightplan(raw: ?*c.flightplan) ?*FlightPlan {
-    return @ptrCast(?*FlightPlan, @alignCast(@alignOf(?*FlightPlan), raw));
-}
-
-pub fn cflightplan(fpl: FlightPlan) ?*c.flightplan {
+pub fn cflightplan(fpl: FlightPlan) ?*FlightPlan {
     const result = c_allocator.create(FlightPlan) catch return null;
     result.* = fpl;
-    return @ptrCast(?*c.flightplan, result);
+    return result;
 }
 
 //-------------------------------------------------------------------
 // Errors
 
-export fn fpl_last_error() ?*c.flightplan_error {
-    const err = Error.lastError() orelse return null;
-    return @ptrCast(?*c.flightplan_error, err);
+export fn fpl_last_error() ?*Error {
+    return Error.lastError();
 }
 
-export fn fpl_error_message(raw: ?*c.flightplan_error) ?[*:0]const u8 {
-    const err = errptr(raw) orelse return null;
+export fn fpl_error_message(raw: ?*Error) ?[*:0]const u8 {
+    const err = raw orelse return null;
     return err.message().ptr;
-}
-
-pub fn errptr(raw: ?*c.flightplan_error) ?*Error {
-    return @ptrCast(?*Error, @alignCast(@alignOf(?*Error), raw));
 }
 
 //-------------------------------------------------------------------
@@ -98,52 +85,51 @@ pub fn errptr(raw: ?*c.flightplan_error) ?*Error {
 
 const WPIterator = std.meta.fieldInfo(FlightPlan, .waypoints).field_type.ValueIterator;
 
-export fn fpl_waypoints_count(raw: ?*c.flightplan) c_int {
-    if (flightplan(raw)) |fpl| {
+export fn fpl_waypoints_count(raw: ?*FlightPlan) c_int {
+    if (raw) |fpl| {
         return @intCast(c_int, fpl.waypoints.count());
     }
 
     return 0;
 }
 
-export fn fpl_waypoints_iter(raw: ?*c.flightplan) ?*c.flightplan_waypoint_iter {
-    const fpl = flightplan(raw) orelse return null;
+export fn fpl_waypoints_iter(raw: ?*FlightPlan) ?*WPIterator {
+    const fpl = raw orelse return null;
     const iter = fpl.waypoints.valueIterator();
 
     const result = c_allocator.create(@TypeOf(iter)) catch return null;
     result.* = iter;
-    return @ptrCast(?*c.flightplan_waypoint_iter, result);
+    return result;
 }
 
-export fn fpl_waypoint_iter_free(raw: ?*c.flightplan_waypoint_iter) void {
-    if (waypointIter(raw)) |iter| {
+export fn fpl_waypoint_iter_free(raw: ?*WPIterator) void {
+    if (raw) |iter| {
         c_allocator.destroy(iter);
     }
 }
 
-export fn fpl_waypoints_next(raw: ?*c.flightplan_waypoint_iter) ?*c.flightplan_waypoint {
-    const iter = waypointIter(raw) orelse return null;
-    const next = iter.next() orelse return null;
-    return @ptrCast(?*c.flightplan_waypoint, next);
+export fn fpl_waypoints_next(raw: ?*WPIterator) ?*Waypoint {
+    const iter = raw orelse return null;
+    return iter.next();
 }
 
-export fn fpl_waypoint_identifier(raw: ?*c.flightplan_waypoint) ?[*:0]const u8 {
-    const wp = waypoint(raw) orelse return null;
+export fn fpl_waypoint_identifier(raw: ?*Waypoint) ?[*:0]const u8 {
+    const wp = raw orelse return null;
     return wp.identifier.ptr;
 }
 
-export fn fpl_waypoint_lat(raw: ?*c.flightplan_waypoint) f32 {
-    const wp = waypoint(raw) orelse return -1;
+export fn fpl_waypoint_lat(raw: ?*Waypoint) f32 {
+    const wp = raw orelse return -1;
     return wp.lat;
 }
 
-export fn fpl_waypoint_lon(raw: ?*c.flightplan_waypoint) f32 {
-    const wp = waypoint(raw) orelse return -1;
+export fn fpl_waypoint_lon(raw: ?*Waypoint) f32 {
+    const wp = raw orelse return -1;
     return wp.lon;
 }
 
-export fn fpl_waypoint_type(raw: ?*c.flightplan_waypoint) c.flightplan_waypoint_type {
-    const wp = waypoint(raw) orelse return c.FLIGHTPLAN_INVALID;
+export fn fpl_waypoint_type(raw: ?*Waypoint) c.flightplan_waypoint_type {
+    const wp = raw orelse return c.FLIGHTPLAN_INVALID;
     return @enumToInt(wp.type) + 1; // must add 1 due to _INVALID
 }
 
@@ -152,18 +138,11 @@ export fn fpl_waypoint_type_str(raw: c.flightplan_waypoint_type) [*:0]const u8 {
     return @intToEnum(Waypoint.Type, raw - 1).toString().ptr;
 }
 
-pub fn waypoint(raw: ?*c.flightplan_waypoint) ?*Waypoint {
-    return @ptrCast(?*Waypoint, @alignCast(@alignOf(?*Waypoint), raw));
-}
-pub fn waypointIter(raw: ?*c.flightplan_waypoint_iter) ?*WPIterator {
-    return @ptrCast(?*WPIterator, @alignCast(@alignOf(?*WPIterator), raw));
-}
-
 //-------------------------------------------------------------------
 // Route
 
-export fn fpl_route_name(raw: ?*c.flightplan) ?[*:0]const u8 {
-    const fpl = flightplan(raw) orelse return null;
+export fn fpl_route_name(raw: ?*FlightPlan) ?[*:0]const u8 {
+    const fpl = raw orelse return null;
     if (fpl.route.name) |v| {
         return v.ptr;
     }
@@ -171,24 +150,17 @@ export fn fpl_route_name(raw: ?*c.flightplan) ?[*:0]const u8 {
     return null;
 }
 
-export fn fpl_route_points_count(raw: ?*c.flightplan) c_int {
-    const fpl = flightplan(raw) orelse return 0;
+export fn fpl_route_points_count(raw: ?*FlightPlan) c_int {
+    const fpl = raw orelse return 0;
     return @intCast(c_int, fpl.route.points.items.len);
 }
 
-export fn fpl_route_points_get(raw: ?*c.flightplan, idx: c_int) ?*c.flightplan_route_point {
-    const fpl = flightplan(raw) orelse return null;
-    const val = &fpl.route.points.items[@intCast(usize, idx)];
-
-    // have to use intToPtr to avoid const qualifier discard
-    return @intToPtr(*c.flightplan_route_point, @ptrToInt(val));
+export fn fpl_route_points_get(raw: ?*FlightPlan, idx: c_int) ?*Route.Point {
+    const fpl = raw orelse return null;
+    return &fpl.route.points.items[@intCast(usize, idx)];
 }
 
-export fn fpl_route_point_identifier(raw: ?*c.flightplan_route_point) ?[*:0]const u8 {
-    const ptr = routePoint(raw) orelse return null;
+export fn fpl_route_point_identifier(raw: ?*Route.Point) ?[*:0]const u8 {
+    const ptr = raw orelse return null;
     return ptr.identifier;
-}
-
-pub fn routePoint(raw: ?*c.flightplan_route_point) ?*Route.Point {
-    return @ptrCast(?*Route.Point, @alignCast(@alignOf(?*Route.Point), raw));
 }
