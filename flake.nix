@@ -4,7 +4,7 @@
   inputs = {
     nixpkgs.url = "github:nixos/nixpkgs/nixpkgs-unstable";
     flake-utils.url = "github:numtide/flake-utils";
-    zig.url = "github:arqv/zig-overlay";
+    zig.url = "github:roarkanize/zig-overlay";
 
     flake-compat = { url = github:edolstra/flake-compat; flake = false; };
   };
