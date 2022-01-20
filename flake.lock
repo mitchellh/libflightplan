@@ -94,13 +94,13 @@
       "locked": {
         "lastModified": 1642206480,
         "narHash": "sha256-aS5zbhz+KXmDYBINbEabnVEhp7OQ0yR/O7pfFZqKRPw=",
-        "owner": "arqv",
+        "owner": "roarkanize",
         "repo": "zig-overlay",
         "rev": "78e7670a7e1d57a60819dc1bfa026670bf09c48c",
         "type": "github"
       },
       "original": {
-        "owner": "arqv",
+        "owner": "roarkanize",
         "repo": "zig-overlay",
         "type": "github"
       }
