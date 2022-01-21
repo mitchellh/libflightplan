@@ -112,7 +112,8 @@ fn main() !void {
 
 ## Build
 
-To build libflightplan, you need to have the following installed:
+To build libflightplan, you need to fetch the git submodules (`git submodule update --init --recursive`)
+and have the following installed:
 
   * [Zig](https://ziglang.org/)
   * [Libxml2](http://www.xmlsoft.org/)
@@ -125,4 +126,3 @@ to run all the tests.
 A [Nix](https://nixos.org/) flake is also provided. If you are a Nix user, you
 can easily build this library, depend on it, etc. You know who you are and you
 know what to do.
-
