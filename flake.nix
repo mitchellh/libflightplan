@@ -6,28 +6,36 @@
     flake-utils.url = "github:numtide/flake-utils";
     zig.url = "github:roarkanize/zig-overlay";
 
+    # Used for shell.nix
     flake-compat = { url = github:edolstra/flake-compat; flake = false; };
+
+    # Dependencies we track using flake.lock
+    zig-libxml2-src = {
+      url = "https://github.com/mitchellh/zig-libxml2.git";
+      flake = false;
+      submodules = true;
+      type = "git";
+      ref = "main";
+    };
   };
 
   outputs = { self, nixpkgs, flake-utils, ... }@inputs:
-    # These are the same systems that zig supports
-    let systems = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+    let
+      overlays = [
+        # Our repo overlay
+        (import ./nix/overlay.nix)
+
+        # Other overlays
+        (final: prev: {
+          zigpkgs = inputs.zig.packages.${prev.system};
+          zig-libxml2-src = inputs.zig-libxml2-src;
+        })
+      ];
+
+      # Our supported systems are the same supported systems as the Zig binaries
+      systems = builtins.attrNames inputs.zig.packages;
     in flake-utils.lib.eachSystem systems (system:
-      let
-        # Our in-repo overlay of packages
-        overlay = (import ./nix/overlay.nix) {
-          inherit nixpkgs;
-          zigpkgs = inputs.zig.packages.${system};
-        };
-
-        # Initialize our package repository, adding overlays from inputs
-        pkgs = import nixpkgs {
-          inherit system;
-
-          overlays = [
-            overlay
-          ];
-        };
+      let pkgs = import nixpkgs { inherit overlays system; };
       in rec {
         devShell = pkgs.devShell;
         packages.libflightplan = pkgs.libflightplan;

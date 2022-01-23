@@ -83,7 +83,8 @@
         "flake-compat": "flake-compat",
         "flake-utils": "flake-utils",
         "nixpkgs": "nixpkgs",
-        "zig": "zig"
+        "zig": "zig",
+        "zig-libxml2-src": "zig-libxml2-src"
       }
     },
     "zig": {
@@ -103,6 +104,25 @@
         "owner": "roarkanize",
         "repo": "zig-overlay",
         "type": "github"
+      }
+    },
+    "zig-libxml2-src": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1642210805,
+        "narHash": "sha256-zQh4yqCOetocb8fV/0Rgbq3JcMhaJQKGgvmsSrdl/h4=",
+        "ref": "main",
+        "rev": "c2cf5ec294d08adfa0fc7aea7245a83871ed19f2",
+        "revCount": 10,
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/mitchellh/zig-libxml2.git"
+      },
+      "original": {
+        "ref": "main",
+        "submodules": true,
+        "type": "git",
+        "url": "https://github.com/mitchellh/zig-libxml2.git"
       }
     }
   },

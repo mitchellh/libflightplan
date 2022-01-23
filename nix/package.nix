@@ -3,6 +3,7 @@
 , pkg-config
 , scdoc
 , libxml2
+, zig-libxml2-src
 }:
 
 stdenv.mkDerivation rec {
@@ -21,6 +22,7 @@ stdenv.mkDerivation rec {
 
   preBuild = ''
     export HOME=$TMPDIR
+    cp -r ${zig-libxml2-src} ./vendor/zig-libxml2
   '';
 
   installPhase = ''

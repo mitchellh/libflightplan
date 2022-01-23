@@ -64,3 +64,6 @@ jobs:
     # will ensure we have all our dependencies.
     - name: test
       run: nix develop -c zig build test-unit
+
+    # Run a full build to ensure that works
+    - run: nix build
