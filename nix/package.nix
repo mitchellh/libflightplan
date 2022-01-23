@@ -1,4 +1,5 @@
 { stdenv
+, lib
 , zig
 , pkg-config
 , scdoc
@@ -30,4 +31,13 @@ stdenv.mkDerivation rec {
     zig build -Drelease-safe -Dman-pages --prefix $out install
     runHook postInstall
   '';
+
+  outputs = [ "out" "dev" "man" ];
+
+  meta = with lib; {
+    description = "A library for reading and writing flight plans in various formats";
+    homepage = "https://github.com/mitchellh/libflightplan";
+    license = licenses.mit;
+    platforms = [ "x86_64-linux" "aarch64-linux" "x86_64-darwin" "aarch64-darwin" ];
+  };
 }
