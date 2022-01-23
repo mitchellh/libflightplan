@@ -22,7 +22,7 @@ stdenv.mkDerivation rec {
 
   preBuild = ''
     export HOME=$TMPDIR
-    cp -r ${zig-libxml2-src} ./vendor/zig-libxml2
+    cp -r ${zig-libxml2-src} ./vendor/zig-libxml2/
   '';
 
   installPhase = ''
